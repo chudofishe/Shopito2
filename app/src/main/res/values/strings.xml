@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Shopito</string>
+
+    <!-- Category names -->
+    <string name="category_children">Kids</string>
+    <string name="category_bakery">Bakery</string>
+    <string name="category_drinks">Drinks</string>
+    <string name="category_pets">Pets</string>
+    <string name="category_home">Household</string>
+    <string name="category_grocery">Grocery</string>
+    <string name="category_dairy">Dairy</string>
+    <string name="category_meds">Medication</string>
+    <string name="category_fruits_and_vegatables">Fruits &amp; Vegetables</string>
+    <string name="category_meat">Meat &amp; Fish</string>
+    <string name="category_hygiene_and_cosmetics">Hygiene &amp; Cosmetics</string>
+    <string name="category_snacks">Snacks</string>
+    <string name="category_other">Other</string>
+    <string name="category_done">Done</string>
+
+    <string name="bottom_destination_current">Current</string>
+
+    <string name="label_list_empty">This list is currently empty</string>
+    <string name="add_item">Add item</string>
+</resources>

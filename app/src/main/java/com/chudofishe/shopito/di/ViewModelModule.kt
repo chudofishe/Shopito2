@@ -1,0 +1,18 @@
+package com.chudofishe.shopito.di
+
+import com.chudofishe.shopito.ui.add_list_item.create_item.CreateItemScreenViewModel
+import com.chudofishe.shopito.ui.add_list_item.recent_Items.RecentItemScreenViewModel
+import com.chudofishe.shopito.ui.home.HomeScreenState
+import com.chudofishe.shopito.ui.home.HomeViewModel
+import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsViewmodel
+import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreenViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+
+val vmModule = module {
+    viewModel { ShoppingListScreenViewModel(get()) }
+    viewModel { RecentItemScreenViewModel(get(), get()) }
+    viewModel { CreateItemScreenViewModel(get(), get(), get()) }
+    viewModel { RecentShoppingListsViewmodel(get()) }
+    viewModel { HomeViewModel(get()) }
+}
