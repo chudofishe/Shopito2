@@ -35,6 +35,7 @@ import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.model.ShoppingListItem
 import com.chudofishe.shopito.navigation.BottomNavigationRoute
+import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
 import com.chudofishe.shopito.toDayOfWeekDateTimeString
 import com.chudofishe.shopito.ui.theme.ShopitoTheme
 import org.koin.androidx.compose.koinViewModel
@@ -44,14 +45,16 @@ import java.time.LocalDateTime
 fun RecentShoppingListsScreen(
     modifier: Modifier = Modifier,
     setRecentListsFabOnClick: (() -> Unit) -> Unit,
-    onNavigateToCurrentList: () -> Unit
+    onNavigateToViewList: (Long) -> Unit
 ) {
     val viewmodel: RecentShoppingListsViewmodel = koinViewModel()
     val state by viewmodel.state.collectAsState()
 
     ObserveAsEvents(viewmodel.navigationEventsChannelFlow) {
         when (it) {
-            BottomNavigationRoute.CurrentListRoute -> onNavigateToCurrentList()
+            is TopLevelNavigationRoute.ViewListRoute -> {
+                onNavigateToViewList(it.listId)
+            }
         }
     }
 
@@ -65,7 +68,7 @@ fun RecentShoppingListsScreen(
         modifier = modifier,
         state = state,
         onItemClicked = {
-            viewmodel.setCurrentListId(it.id)
+            viewmodel.navigateToViewList(it.id)
         }
     )
 }

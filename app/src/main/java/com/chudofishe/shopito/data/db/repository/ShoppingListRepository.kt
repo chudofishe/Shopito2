@@ -1,5 +1,6 @@
 package com.chudofishe.shopito.data.db.repository
 
+import android.util.Log
 import com.chudofishe.shopito.areAllItemsComplete
 import com.chudofishe.shopito.asStateFlow
 import com.chudofishe.shopito.data.db.CurrentListDatastore
@@ -143,6 +144,14 @@ class ShoppingListRepository(
     }
 
     fun getAll(): Flow<List<ShoppingList>> = dao.getAll()
+
+    fun getListById(id: Long): ShoppingList {
+        return dao.getById(id)!!
+    }
+
+    fun observeListById(id: Long): Flow<ShoppingList> {
+        return dao.getFlowById(id)
+    }
 
     suspend fun deleteCurrentList() {
         dao.delete(getCurrentList())

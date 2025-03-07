@@ -7,6 +7,7 @@ import com.chudofishe.shopito.data.db.repository.ShoppingListRepository
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.navigation.BottomNavigationRoute
 import com.chudofishe.shopito.navigation.NavigationRoute
+import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -41,6 +42,12 @@ class RecentShoppingListsViewmodel(
         viewModelScope.launch {
             shoppingListRepository.setCurrentListId(id)
             navigationChannel.send(BottomNavigationRoute.CurrentListRoute)
+        }
+    }
+
+    fun navigateToViewList(id: Long) {
+        viewModelScope.launch {
+            navigationChannel.send(TopLevelNavigationRoute.ViewListRoute(id))
         }
     }
 

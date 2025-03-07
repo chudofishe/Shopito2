@@ -6,6 +6,7 @@ import com.chudofishe.shopito.ui.home.HomeScreenState
 import com.chudofishe.shopito.ui.home.HomeViewModel
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsViewmodel
 import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreenViewModel
+import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListScreenViewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -15,4 +16,5 @@ val vmModule = module {
     viewModel { CreateItemScreenViewModel(get(), get(), get()) }
     viewModel { RecentShoppingListsViewmodel(get()) }
     viewModel { HomeViewModel(get()) }
+    viewModel { ShoppingListScreenViewViewModel(get(), get()) }
 }

@@ -2,6 +2,7 @@ package com.chudofishe.shopito.navigation
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import com.chudofishe.shopito.ui.add_list_item.AddShoppingListItemScreen
 import com.chudofishe.shopito.ui.home.HomeScreen
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsScreen
 import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreen
+import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListViewScreen
 
 
 @Composable
@@ -47,9 +49,17 @@ fun ComposeNavigation(
         homeScreenDestination(
             onNavigateToAddItemScreen = {
                 rootNavController.navigate(TopLevelNavigationRoute.AddItemRoute(categoryToSelect = it))
+            },
+            onNavigateToViewListScreen = {
+                rootNavController.navigate(TopLevelNavigationRoute.ViewListRoute(it))
             }
         )
         addItemScreenDestination(
+            onNavigateUp = {
+                rootNavController.navigateUp()
+            }
+        )
+        viewShoppingListScreenDestination(
             onNavigateUp = {
                 rootNavController.navigateUp()
             }
@@ -60,7 +70,8 @@ fun ComposeNavigation(
 
 @OptIn(ExperimentalMaterial3Api::class)
 private fun NavGraphBuilder.homeScreenDestination(
-    onNavigateToAddItemScreen: (Category) -> Unit
+    onNavigateToAddItemScreen: (Category) -> Unit,
+    onNavigateToViewListScreen: (Long) -> Unit
 ) {
     composable<TopLevelNavigationRoute.HomeRoute> {
         val homeNavController = rememberNavController()
@@ -122,9 +133,7 @@ private fun NavGraphBuilder.homeScreenDestination(
                     RecentShoppingListsScreen(
                         modifier = Modifier.nestedScroll(topBarScrollBehavior.nestedScrollConnection),
                         setRecentListsFabOnClick = setRecentListsFabOnClick,
-                        onNavigateToCurrentList = {
-                            homeNavController.navigate(BottomNavigationRoute.CurrentListRoute)
-                        }
+                        onNavigateToViewList = onNavigateToViewListScreen
                     )
                 }
             }
@@ -137,6 +146,16 @@ private fun NavGraphBuilder.addItemScreenDestination(
 ) {
     composable<TopLevelNavigationRoute.AddItemRoute> {
         AddShoppingListItemScreen(
+            onNavigateUp = onNavigateUp
+        )
+    }
+}
+
+private fun NavGraphBuilder.viewShoppingListScreenDestination(
+    onNavigateUp: () -> Unit
+) {
+    composable<TopLevelNavigationRoute.ViewListRoute> {
+        ShoppingListViewScreen(
             onNavigateUp = onNavigateUp
         )
     }
