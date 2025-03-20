@@ -47,6 +47,7 @@ fun ShoppingListScreenContent(
                 entries = entries,
                 collapsedCategories = list.collapsedCategories,
                 completedCategories = list.completedCategories,
+                isReadOnly = true,
                 onItemChecked = { item ->
                     onItemChecked(item)
                 },

@@ -2,6 +2,7 @@ package com.chudofishe.shopito.ui.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
@@ -18,6 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +28,9 @@ fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onDeleteList: () -> Unit,
     onCompleteList: () -> Unit,
+    onSignIn: () -> Unit,
+    onProfileClicked: () -> Unit,
+
     title: String,
 ) {
 
@@ -47,6 +53,17 @@ fun TopBar(
                         onDismissRequest = {
                             isDropDownExpanded = false
                         }) {
+                        if (Firebase.auth.currentUser == null) {
+                            DropdownMenuItem(
+                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Complete list") },
+                                text = { Text(text = "Sign in") },
+                                onClick = onSignIn)
+                        } else {
+                            DropdownMenuItem(
+                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Complete list") },
+                                text = { Text(text = "Profile") },
+                                onClick = onProfileClicked)
+                        }
                         DropdownMenuItem(
                             leadingIcon = { Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete list") },
                             text = { Text(text = "Delete list") },

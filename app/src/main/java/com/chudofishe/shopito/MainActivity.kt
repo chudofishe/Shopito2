@@ -1,24 +1,40 @@
 package com.chudofishe.shopito
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreen
+import androidx.lifecycle.lifecycleScope
+import com.chudofishe.shopito.auth.FirebaseAuthHandler
 import com.chudofishe.shopito.ui.theme.ShopitoTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ShopitoTheme {
-                ComposeApp()
+                ComposeApp(
+                    signInRequest = {
+                        lifecycleScope.launch {
+                            FirebaseAuthHandler.handleSignIn(this@MainActivity) {
+                                Log.d("MainActivity", "uspeh")
+                            }
+                        }
+                    },
+                    signOutRequest = {
+                        lifecycleScope.launch {
+                            FirebaseAuthHandler.handleSignOut(this@MainActivity)
+                        }
+                    },
+                    onExitApp = {
+                        finish()
+                    }
+                )
             }
         }
     }

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "222933804693",
+    "project_id": "shopito-d61cb",
+    "storage_bucket": "shopito-d61cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222933804693:android:48247e6d4187e6ce23dd9c",
+        "android_client_info": {
+          "package_name": "com.chudofishe.shopito"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222933804693-b8sdka3taua2tlpt3bjhsucoedca3buk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chudofishe.shopito",
+            "certificate_hash": "5a02d45d089761df3fbc6e9f71350c3c85b7751f"
+          }
+        },
+        {
+          "client_id": "222933804693-83l593lsgi85e7lk0p6pqpbck1l7d86g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiPpVdvs5GJtYnJdu__uS9qW3EXVECbVk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222933804693-83l593lsgi85e7lk0p6pqpbck1l7d86g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

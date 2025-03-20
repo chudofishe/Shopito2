@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.chudofishe.shopito.asStateFlow
+import com.chudofishe.shopito.util.asStateFlow
 import com.chudofishe.shopito.data.db.repository.ShoppingListRepository
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList

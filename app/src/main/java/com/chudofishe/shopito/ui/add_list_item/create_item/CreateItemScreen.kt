@@ -26,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chudofishe.shopito.ObserveAsEvents
+import com.chudofishe.shopito.util.ObserveAsEvents
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.navigation.NavigateBack
 import com.chudofishe.shopito.ui.composables.StatefulOutlinedTextField

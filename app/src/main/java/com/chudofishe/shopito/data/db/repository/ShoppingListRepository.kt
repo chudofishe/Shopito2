@@ -1,29 +1,19 @@
 package com.chudofishe.shopito.data.db.repository
 
-import android.util.Log
-import com.chudofishe.shopito.areAllItemsComplete
-import com.chudofishe.shopito.asStateFlow
+import com.chudofishe.shopito.util.areAllItemsComplete
 import com.chudofishe.shopito.data.db.CurrentListDatastore
 import com.chudofishe.shopito.data.db.dao.ShoppingListDao
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.model.ShoppingListItem
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
 
 class ShoppingListRepository(
     private val dao: ShoppingListDao,

@@ -1,4 +1,4 @@
-package com.chudofishe.shopito
+package com.chudofishe.shopito.util
 
 
 sealed class UIEvent {

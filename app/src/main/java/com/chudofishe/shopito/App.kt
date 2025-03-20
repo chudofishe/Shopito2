@@ -2,6 +2,7 @@ package com.chudofishe.shopito
 
 import android.app.Application
 import com.chudofishe.shopito.di.dbModule
+import com.chudofishe.shopito.di.firebaseModule
 import com.chudofishe.shopito.di.vmModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -17,7 +18,8 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 vmModule,
-                dbModule
+                dbModule,
+                firebaseModule
             )
         }
     }

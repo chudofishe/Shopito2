@@ -69,6 +69,7 @@ fun LazyListScope.categorisedList(
     entries: ShoppingListEntries,
     collapsedCategories: Set<Category>,
     completedCategories: Set<Category>,
+    isReadOnly: Boolean = false,
 
     onItemRemoveButtonClicked: (ShoppingListItem) -> Unit,
     onItemChecked: (item: ShoppingListItem) -> Unit,
@@ -79,6 +80,7 @@ fun LazyListScope.categorisedList(
         stickyHeader {
             CategoryHeader(
                 category = category,
+                isReadOnly = isReadOnly,
                 onCollapsedButtonClicked = onCollapsedButtonClicked,
                 onAddButtonClicked = onAddButtonClicked,
                 isCategoryCompleted = category in completedCategories
@@ -93,6 +95,7 @@ fun LazyListScope.categorisedList(
                     ShoppingItem(
                         modifier = Modifier.animateItem(),
                         item = it,
+                        isReadOnly = isReadOnly,
                         onDeleteButtonClicked = {
                             onItemRemoveButtonClicked(it)
                         },
@@ -125,6 +128,8 @@ fun CompleteAnimation(
 fun CategoryHeader(
     category: Category,
     isCategoryCompleted: Boolean = false,
+    isReadOnly: Boolean = false,
+
     onCollapsedButtonClicked: (Category) -> Unit = {},
     onAddButtonClicked: (Category) -> Unit
 ) {
@@ -165,11 +170,13 @@ fun CategoryHeader(
             style = MaterialTheme.typography.headlineSmall,
             textDecoration = if (isCategoryCompleted) TextDecoration.LineThrough else TextDecoration.None
         )
-        Icon(
-            modifier = addButtonModifier,
-            imageVector = Icons.Default.Add,
-            contentDescription = ""
-        )
+        if (!isReadOnly) {
+            Icon(
+                modifier = addButtonModifier,
+                imageVector = Icons.Default.Add,
+                contentDescription = ""
+            )
+        }
     }
 }
 
@@ -181,6 +188,7 @@ fun CategoryHeader(
 fun ShoppingItem(
     modifier: Modifier = Modifier,
     item: ShoppingListItem,
+    isReadOnly: Boolean = false,
 
     onDeleteButtonClicked: () -> Unit = {},
     onCheckedChanged: () -> Unit ={}
@@ -230,12 +238,13 @@ fun ShoppingItem(
                 )
             }
         }
-
-        Icon(
-            modifier = deleteButtonModifier,
-            imageVector = Icons.Default.Close,
-            contentDescription = ""
-        )
+        if (!isReadOnly) {
+            Icon(
+                modifier = deleteButtonModifier,
+                imageVector = Icons.Default.Close,
+                contentDescription = ""
+            )
+        }
     }
 }
 

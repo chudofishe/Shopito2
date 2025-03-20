@@ -2,11 +2,10 @@ package com.chudofishe.shopito.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chudofishe.shopito.asStateFlow
+import com.chudofishe.shopito.util.asStateFlow
 import com.chudofishe.shopito.data.db.repository.ShoppingListRepository
 import com.chudofishe.shopito.model.ShoppingList
-import com.chudofishe.shopito.toDayOfWeekDateTimeString
-import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreenState
+import com.chudofishe.shopito.util.toDayOfWeekDateTimeString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -33,10 +32,4 @@ class HomeViewModel(
             }
         }
     }
-
-//    fun deleteCurrentList() {
-//        viewModelScope.launch {
-//            shoppingListRepository.de
-//        }
-//    }
 }

@@ -2,7 +2,7 @@ package com.chudofishe.shopito.ui.recent_lists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chudofishe.shopito.asStateFlow
+import com.chudofishe.shopito.util.asStateFlow
 import com.chudofishe.shopito.data.db.repository.ShoppingListRepository
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.navigation.BottomNavigationRoute
@@ -12,7 +12,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 class RecentShoppingListsViewmodel(
     private val shoppingListRepository: ShoppingListRepository

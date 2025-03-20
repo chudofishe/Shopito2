@@ -4,6 +4,7 @@ import com.chudofishe.shopito.ui.add_list_item.create_item.CreateItemScreenViewM
 import com.chudofishe.shopito.ui.add_list_item.recent_Items.RecentItemScreenViewModel
 import com.chudofishe.shopito.ui.home.HomeScreenState
 import com.chudofishe.shopito.ui.home.HomeViewModel
+import com.chudofishe.shopito.ui.profile.ProfileViewModel
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsViewmodel
 import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreenViewModel
 import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListScreenViewViewModel
@@ -17,4 +18,5 @@ val vmModule = module {
     viewModel { RecentShoppingListsViewmodel(get()) }
     viewModel { HomeViewModel(get()) }
     viewModel { ShoppingListScreenViewViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get()) }
 }

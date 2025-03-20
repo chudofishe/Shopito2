@@ -2,7 +2,6 @@ package com.chudofishe.shopito.navigation
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -25,53 +23,18 @@ import androidx.navigation.compose.rememberNavController
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.ui.add_list_item.AddShoppingListItemScreen
 import com.chudofishe.shopito.ui.home.HomeScreen
+import com.chudofishe.shopito.ui.profile.ProfileScreen
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsScreen
 import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreen
 import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListViewScreen
 
-
-@Composable
-fun ComposeNavigation(
-
-) {
-    val rootNavController = rememberNavController()
-
-    NavHost(
-        navController = rootNavController,
-        startDestination = TopLevelNavigationRoute.HomeRoute,
-        enterTransition = {
-            EnterTransition.None
-        },
-        exitTransition = {
-            ExitTransition.None
-        }
-    ) {
-        homeScreenDestination(
-            onNavigateToAddItemScreen = {
-                rootNavController.navigate(TopLevelNavigationRoute.AddItemRoute(categoryToSelect = it))
-            },
-            onNavigateToViewListScreen = {
-                rootNavController.navigate(TopLevelNavigationRoute.ViewListRoute(it))
-            }
-        )
-        addItemScreenDestination(
-            onNavigateUp = {
-                rootNavController.navigateUp()
-            }
-        )
-        viewShoppingListScreenDestination(
-            onNavigateUp = {
-                rootNavController.navigateUp()
-            }
-        )
-    }
-}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
-private fun NavGraphBuilder.homeScreenDestination(
+fun NavGraphBuilder.homeScreenDestination(
     onNavigateToAddItemScreen: (Category) -> Unit,
-    onNavigateToViewListScreen: (Long) -> Unit
+    onNavigateToViewListScreen: (Long) -> Unit,
+    onNavigateToProfileScreen: () -> Unit,
+    onSignInRequest: () -> Unit,
+    onExitApp: () -> Unit
 ) {
     composable<TopLevelNavigationRoute.HomeRoute> {
         val homeNavController = rememberNavController()
@@ -84,13 +47,12 @@ private fun NavGraphBuilder.homeScreenDestination(
             }
         } ?: BottomNavigationRoute.CurrentListRoute
 
-        val activity = LocalContext.current as Activity
         val (recentListsFabOnClick, setRecentListsFabOnClick) = remember { mutableStateOf<(() -> Unit)?>(null) }
         val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
         BackHandler {
             if (currentRoute == BottomNavigationRoute.CurrentListRoute) {
-                activity.finish()
+                onExitApp()
             }
         }
 
@@ -108,6 +70,8 @@ private fun NavGraphBuilder.homeScreenDestination(
                     }
                 }
             },
+            onSignInRequest = onSignInRequest,
+            onNavigateToProFile = onNavigateToProfileScreen,
             onNavItemSelected = {
                 homeNavController.navigate(it) {
                     popUpTo(homeNavController.graph.findStartDestination().id) {
@@ -141,7 +105,7 @@ private fun NavGraphBuilder.homeScreenDestination(
     }
 }
 
-private fun NavGraphBuilder.addItemScreenDestination(
+fun NavGraphBuilder.addItemScreenDestination(
     onNavigateUp: () -> Unit
 ) {
     composable<TopLevelNavigationRoute.AddItemRoute> {
@@ -151,12 +115,24 @@ private fun NavGraphBuilder.addItemScreenDestination(
     }
 }
 
-private fun NavGraphBuilder.viewShoppingListScreenDestination(
+fun NavGraphBuilder.viewShoppingListScreenDestination(
     onNavigateUp: () -> Unit
 ) {
     composable<TopLevelNavigationRoute.ViewListRoute> {
         ShoppingListViewScreen(
             onNavigateUp = onNavigateUp
+        )
+    }
+}
+
+fun NavGraphBuilder.profileScreenDestination(
+    onNavigateUp: () -> Unit,
+    onSignOut: () -> Unit
+) {
+    composable<TopLevelNavigationRoute.ProfileRoute> {
+        ProfileScreen(
+            onNavigateUp = onNavigateUp,
+            onSignOut = onSignOut
         )
     }
 }

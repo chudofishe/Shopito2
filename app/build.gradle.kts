@@ -91,4 +91,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.lottie.compose)
+
+    //Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

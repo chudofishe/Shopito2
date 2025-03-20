@@ -30,13 +30,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chudofishe.shopito.ObserveAsEvents
+import com.chudofishe.shopito.util.ObserveAsEvents
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.model.ShoppingListItem
-import com.chudofishe.shopito.navigation.BottomNavigationRoute
 import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
-import com.chudofishe.shopito.toDayOfWeekDateTimeString
+import com.chudofishe.shopito.util.toDayOfWeekDateTimeString
 import com.chudofishe.shopito.ui.theme.ShopitoTheme
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDateTime

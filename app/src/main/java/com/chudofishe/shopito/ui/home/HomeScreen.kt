@@ -30,6 +30,8 @@ fun HomeScreen(
     currentRoute: BottomNavigationRoute,
     topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onFabClicked: () -> Unit,
+    onSignInRequest: () -> Unit,
+    onNavigateToProFile: () -> Unit,
     onNavItemSelected: (BottomNavigationRoute) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -58,7 +60,9 @@ fun HomeScreen(
                 onDeleteList = { showDeleteDialog = true },
                 onCompleteList = {
 
-                }
+                },
+                onSignIn = onSignInRequest,
+                onProfileClicked = onNavigateToProFile
             )
         },
         floatingActionButton = {

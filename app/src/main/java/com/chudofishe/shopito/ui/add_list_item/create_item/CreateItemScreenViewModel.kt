@@ -4,14 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.chudofishe.shopito.asStateFlow
+import com.chudofishe.shopito.util.asStateFlow
 import com.chudofishe.shopito.data.db.repository.ShoppingListItemRepository
 import com.chudofishe.shopito.data.db.repository.ShoppingListRepository
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingListItem
 import com.chudofishe.shopito.navigation.NavigateBack
 import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
