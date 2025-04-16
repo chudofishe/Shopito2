@@ -1,11 +1,9 @@
 package com.chudofishe.shopito.ui.profile
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,16 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.chudofishe.shopito.model.UserData
-import com.chudofishe.shopito.ui.composables.ShoppingListScreenContent
-import com.chudofishe.shopito.ui.home.HomeViewModel
-import com.chudofishe.shopito.util.toDayOfWeekDateTimeString
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +44,7 @@ fun ProfileScreen(
 ) {
 
     val profileViewModel: ProfileViewModel = koinViewModel()
-    val state by profileViewModel.userData.collectAsState()
+    val state by profileViewModel.state.collectAsState()
 
     Scaffold(
         topBar = {
@@ -74,7 +65,7 @@ fun ProfileScreen(
     ) { padding ->
         ProfileScreenContent(
             modifier = Modifier.padding(padding),
-            state = state,
+            state = state.userData,
             onSignOutClicked = onSignOut
         )
     }
