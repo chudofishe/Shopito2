@@ -6,7 +6,7 @@ import com.chudofishe.shopito.data.firebase.RealtimeDatabaseResult
 import com.chudofishe.shopito.data.firebase.RealtimeDatabaseValueResult
 import com.chudofishe.shopito.data.firebase.repo.FirebaseFriendRepository
 import com.chudofishe.shopito.data.firebase.repo.FirebaseFriendRequestRepository
-import com.chudofishe.shopito.model.FriendData
+import com.chudofishe.shopito.model.UserData
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ class FriendsViewModel(
     private val firebaseFriendRequestRepository: FirebaseFriendRequestRepository
 ) : ViewModel() {
 
-    private val _friends = MutableStateFlow<List<FriendData>>(emptyList())
+    private val _friends = MutableStateFlow<List<UserData>>(emptyList())
     val friends = _friends.asStateFlow()
 
     private val toastChannel = Channel<String>()
@@ -34,9 +34,9 @@ class FriendsViewModel(
         }
     }
 
-    fun removeFriend(friendData: FriendData) {
+    fun removeFriend(UserData: UserData) {
         viewModelScope.launch {
-            when (val res = firebaseFriendRepository.removeFriend(friendData.uid)) {
+            when (val res = firebaseFriendRepository.removeFriend(UserData)) {
                 is RealtimeDatabaseResult.Error -> toastChannel.trySend(res.error.toString())
                 RealtimeDatabaseResult.Success -> toastChannel.trySend("Friend removed")
                 RealtimeDatabaseResult.Loading -> {}
@@ -47,7 +47,7 @@ class FriendsViewModel(
     fun sendFriendRequest(email: String) {
         viewModelScope.launch {
             when (val res = firebaseFriendRequestRepository.sendFriendRequest(email)) {
-                is RealtimeDatabaseResult.Error -> toastChannel.trySend("Failed to send request")
+                is RealtimeDatabaseResult.Error -> toastChannel.trySend(res.error.toString())
                 RealtimeDatabaseResult.Success -> toastChannel.trySend("Request sent")
                 RealtimeDatabaseResult.Loading -> {}
             }

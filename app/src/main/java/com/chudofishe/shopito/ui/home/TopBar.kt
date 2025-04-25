@@ -30,12 +30,18 @@ fun TopBar(
     onCompleteList: () -> Unit,
     onSignIn: () -> Unit,
     onProfileClicked: () -> Unit,
-
     title: String,
 ) {
-
     var isDropDownExpanded by remember {
         mutableStateOf(false)
+    }
+
+    // Функция-обертка, которая закрывает меню и вызывает переданный обработчик
+    val wrapWithMenuClose: (() -> Unit) -> () -> Unit = { action ->
+        {
+            isDropDownExpanded = false
+            action()
+        }
     }
 
     CenterAlignedTopAppBar(
@@ -55,23 +61,27 @@ fun TopBar(
                         }) {
                         if (Firebase.auth.currentUser == null) {
                             DropdownMenuItem(
-                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Complete list") },
+                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Sign in") },
                                 text = { Text(text = "Sign in") },
-                                onClick = onSignIn)
+                                onClick = wrapWithMenuClose(onSignIn)
+                            )
                         } else {
                             DropdownMenuItem(
-                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Complete list") },
+                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile") },
                                 text = { Text(text = "Profile") },
-                                onClick = onProfileClicked)
+                                onClick = wrapWithMenuClose(onProfileClicked)
+                            )
                         }
                         DropdownMenuItem(
                             leadingIcon = { Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete list") },
                             text = { Text(text = "Delete list") },
-                            onClick = onDeleteList)
+                            onClick = wrapWithMenuClose(onDeleteList)
+                        )
                         DropdownMenuItem(
                             leadingIcon = { Icon(imageVector = Icons.Default.Check, contentDescription = "Complete list") },
                             text = { Text(text = "Complete list") },
-                            onClick = onCompleteList)
+                            onClick = wrapWithMenuClose(onCompleteList)
+                        )
                     }
                 }
             }

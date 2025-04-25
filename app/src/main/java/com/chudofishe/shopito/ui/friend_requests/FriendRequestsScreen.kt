@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -23,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chudofishe.shopito.model.FriendData
+import com.chudofishe.shopito.model.UserData
 import com.chudofishe.shopito.ui.composables.FriendRequestListItem
 import com.chudofishe.shopito.util.ObserveAsEvents
 
@@ -77,9 +76,9 @@ fun FriendRequestsScreen(
 @Composable
 fun FriendRequestsScreenContent(
     modifier: Modifier = Modifier,
-    items: List<FriendData> = emptyList(),
-    onAccept: (FriendData) -> Unit,
-    onDecline: (FriendData) -> Unit
+    items: List<UserData> = emptyList(),
+    onAccept: (UserData) -> Unit,
+    onDecline: (UserData) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.padding(12.dp),
@@ -103,32 +102,32 @@ fun FriendsScreenPreview(
     FriendRequestsScreenContent(
         modifier = Modifier.fillMaxSize(),
         items = listOf(
-            FriendData(
-                uid = "uid_001",
+            UserData(
+                userId = "uid_001",
                 email = "alice@example.com",
                 photoUrl = "https://example.com/photos/alice.jpg",
                 name = "Alice Johnson"
             ),
-            FriendData(
-                uid = "uid_002",
+            UserData(
+                userId = "uid_002",
                 email = "bob@example.com",
                 photoUrl = "https://example.com/photos/bob.jpg",
                 name = "Bob Smith"
             ),
-            FriendData(
-                uid = "uid_003",
+            UserData(
+                userId = "uid_003",
                 email = "charlie@example.com",
                 photoUrl = "https://example.com/photos/charlie.jpg",
                 name = "Charlie Green"
             ),
-            FriendData(
-                uid = "uid_004",
+            UserData(
+                userId = "uid_004",
                 email = "diana@example.com",
                 photoUrl = "https://example.com/photos/diana.jpg",
                 name = "Diana Prince"
             ),
-            FriendData(
-                uid = "uid_005",
+            UserData(
+                userId = "uid_005",
                 email = "eve@example.com",
                 photoUrl = "https://example.com/photos/eve.jpg",
                 name = "Eve Adams"

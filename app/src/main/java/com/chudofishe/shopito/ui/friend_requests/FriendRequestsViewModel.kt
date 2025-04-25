@@ -6,7 +6,7 @@ import com.chudofishe.shopito.data.firebase.RealtimeDatabaseResult
 import com.chudofishe.shopito.data.firebase.RealtimeDatabaseValueResult
 import com.chudofishe.shopito.data.firebase.repo.FirebaseFriendRepository
 import com.chudofishe.shopito.data.firebase.repo.FirebaseFriendRequestRepository
-import com.chudofishe.shopito.model.FriendData
+import com.chudofishe.shopito.model.UserData
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ class FriendRequestsViewModel(
     private val firebaseFriendRepository: FirebaseFriendRepository
 ) : ViewModel() {
 
-    private val _friendRequests = MutableStateFlow<List<FriendData>>(emptyList())
+    private val _friendRequests = MutableStateFlow<List<UserData>>(emptyList())
     val friendRequests = _friendRequests.asStateFlow()
 
     private val toastChannel = Channel<String>()
@@ -34,19 +34,9 @@ class FriendRequestsViewModel(
         }
     }
 
-    fun sendFriendRequest(email: String) {
+    fun declineFriendRequest(request: UserData) {
         viewModelScope.launch {
-            when (val res = firebaseFriendRequestRepository.sendFriendRequest(email)) {
-                is RealtimeDatabaseResult.Error -> toastChannel.trySend("Failed to send request")
-                RealtimeDatabaseResult.Success -> toastChannel.trySend("Request sent")
-                RealtimeDatabaseResult.Loading -> {}
-            }
-        }
-    }
-
-    fun declineFriendRequest(request: FriendData) {
-        viewModelScope.launch {
-            when (val res = firebaseFriendRequestRepository.deleteFriendRequestByUid(request.uid)) {
+            when (val res = firebaseFriendRequestRepository.deleteFriendRequestByUid(request.userId)) {
                 is RealtimeDatabaseResult.Error -> toastChannel.trySend(res.error.toString())
                 RealtimeDatabaseResult.Success -> toastChannel.trySend("Request declined")
                 RealtimeDatabaseResult.Loading -> {}
@@ -54,11 +44,11 @@ class FriendRequestsViewModel(
         }
     }
 
-    fun acceptFriendRequest(request: FriendData) {
+    fun acceptFriendRequest(request: UserData) {
         viewModelScope.launch {
-            val deleteResult = firebaseFriendRequestRepository.deleteFriendRequestByUid(request.uid)
+            val deleteResult = firebaseFriendRequestRepository.deleteFriendRequestByUid(request.userId)
             if (deleteResult is RealtimeDatabaseResult.Success) {
-                when (val addRes = firebaseFriendRepository.addFriend(request.uid)) {
+                when (val addRes = firebaseFriendRepository.addFriend(request)) {
                     is RealtimeDatabaseResult.Error -> toastChannel.trySend(addRes.error.toString())
                     RealtimeDatabaseResult.Success -> toastChannel.trySend("Friend added")
                     RealtimeDatabaseResult.Loading -> {}

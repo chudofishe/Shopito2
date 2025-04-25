@@ -33,12 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.chudofishe.shopito.model.FriendData
+import com.chudofishe.shopito.model.UserData
 
 @Composable
-fun FriendDataListItem(
+fun UserDataListItem(
     modifier: Modifier = Modifier,
-    data: FriendData,
+    data: UserData,
     endContent: @Composable () -> Unit = {},
 ) {
     val borderWidth = 4.dp
@@ -73,30 +73,37 @@ fun FriendDataListItem(
 @Composable
 fun FriendsListItem(
     modifier: Modifier = Modifier,
-    data: FriendData,
-    onRemoveFriend: (FriendData) -> Unit
+    data: UserData,
+    onRemoveFriend: (UserData) -> Unit
 ) {
     var isDropDownExpanded by remember {
         mutableStateOf(false)
     }
     
-    FriendDataListItem(
+    UserDataListItem(
         modifier = modifier,
         data = data
     ) {
-        Box {
-            Icon(Icons.Default.MoreVert, contentDescription = "Options")
-            DropdownMenu(
-                expanded = isDropDownExpanded,
-                onDismissRequest = {
-                    isDropDownExpanded = false
-                }) {
-                DropdownMenuItem(
-                    text = { Text(text = "Remove") },
-                    onClick = {
-                        onRemoveFriend(data)
-                    }
-                )
+        IconButton(
+            onClick = {
+                isDropDownExpanded = !isDropDownExpanded
+            }
+        ) {
+            Box {
+                Icon(Icons.Default.MoreVert, contentDescription = "Options")
+                DropdownMenu(
+                    expanded = isDropDownExpanded,
+                    onDismissRequest = {
+                        isDropDownExpanded = false
+                    }) {
+                    DropdownMenuItem(
+                        text = { Text(text = "Remove") },
+                        onClick = {
+                            isDropDownExpanded = false
+                            onRemoveFriend(data)
+                        }
+                    )
+                }
             }
         }
     }
@@ -106,14 +113,14 @@ fun FriendsListItem(
 @Composable
 fun FriendRequestListItem(
     modifier: Modifier = Modifier,
-    data: FriendData,
-    onDecline: (FriendData) -> Unit,
-    onAccept: (FriendData) -> Unit
+    data: UserData,
+    onDecline: (UserData) -> Unit,
+    onAccept: (UserData) -> Unit
 ) {
 
     val iconSize = 32.dp
 
-    FriendDataListItem(
+    UserDataListItem(
         modifier = modifier,
         data = data
     ) {
@@ -151,8 +158,8 @@ fun FriendsListItemPreview(
 ) {
     FriendsListItem(
         modifier = Modifier.padding(12.dp),
-        data = FriendData(
-            uid = "uid_001",
+        data = UserData(
+            userId = "uid_001",
             email = "alice@example.com",
             photoUrl = "https://example.com/photos/alice.jpg",
             name = "Alice Johnson"
@@ -168,8 +175,8 @@ fun FriendsRequestItemPreview(
 ) {
     FriendRequestListItem(
         modifier = Modifier.padding(12.dp),
-        data = FriendData(
-            uid = "uid_001",
+        data = UserData(
+            userId = "uid_001",
             email = "alice@example.com",
             photoUrl = "https://example.com/photos/alice.jpg",
             name = "Alice Johnson"

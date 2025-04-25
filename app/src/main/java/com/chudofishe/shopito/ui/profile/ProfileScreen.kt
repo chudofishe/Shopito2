@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,15 +16,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,7 +39,6 @@ import coil3.compose.AsyncImage
 import com.chudofishe.shopito.R
 import com.chudofishe.shopito.model.UserData
 import com.chudofishe.shopito.navigation.ProfileNavigationRoute
-import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
 import org.koin.androidx.compose.koinViewModel
 
 enum class ProfileItem(val iconsRes: Int, val text: String) {
@@ -174,7 +169,7 @@ fun ProfileCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = userData.profilePictureUrl,
+            model = userData.photoUrl,
             contentDescription = "Prifle image",
             modifier = Modifier
                 .size(72.dp)
@@ -189,7 +184,7 @@ fun ProfileCard(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = userData.username.toString(),
+                text = userData.name.toString(),
                 modifier = Modifier.padding(start = 16.dp),
                 style = MaterialTheme.typography.titleLarge
             )
@@ -250,9 +245,9 @@ fun ProfileCardPreview(
     ProfileCard(
         userData = UserData(
             userId = "1234",
-            username = "Vitalii Vinokurov",
+            name = "Vitalii Vinokurov",
             email = "myemael@mail.ru",
-            profilePictureUrl = null
+            photoUrl = null
         )
     )
 }
@@ -264,9 +259,9 @@ fun ProfileScreenPreview() {
     ProfileScreenContent(
         state = UserData(
             userId = "1234",
-            username = "Vitalii Vinokurov",
+            name = "Vitalii Vinokurov",
             email = "myemael@mail.ru",
-            profilePictureUrl = null,
+            photoUrl = null,
         ),
         onListItemsClicked = {
 

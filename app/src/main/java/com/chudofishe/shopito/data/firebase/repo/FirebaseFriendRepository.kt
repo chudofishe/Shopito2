@@ -1,9 +1,12 @@
 package com.chudofishe.shopito.data.firebase.repo
 
 import android.util.Log
+import com.chudofishe.shopito.data.firebase.DBRef
 import com.chudofishe.shopito.data.firebase.RealtimeDatabaseResult
 import com.chudofishe.shopito.data.firebase.RealtimeDatabaseValueResult
-import com.chudofishe.shopito.model.FriendData
+import com.chudofishe.shopito.model.UserData
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,57 +21,48 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseFriendRepository : FirebaseDataRepository() {
 
-    private val REF_FRIEND = "friend"
+    suspend fun addFriend(friend: UserData): RealtimeDatabaseResult {
+        val currentUserId = Firebase.auth.currentUser?.uid
+            ?: return RealtimeDatabaseResult.Error(Exception("Current user is null"))
 
-    suspend fun addFriend(
-        friendId: String
-    ): RealtimeDatabaseResult {
-        Firebase.auth.currentUser?.uid?.let {
-            return try {
-                val ref = db.getReference(REF_FRIEND).child(it).child(friendId)
+        return try {
+            // Создаем Map для обновления нескольких путей одновременно
+            val updates = hashMapOf<String, Any>(
+                "${DBRef.FRIEND}/$currentUserId/${friend.userId}" to true,
+                "${DBRef.FRIEND}/${friend.userId}/$currentUserId" to true
+            )
 
-                ref.setValue(true).await()
-                RealtimeDatabaseResult.Success
-            } catch (e: Exception) {
-                Log.e("sendFriendRequest", e.toString())
-                RealtimeDatabaseResult.Error(e)
-            }
-        } ?: return RealtimeDatabaseResult.Error(Exception("Current user is null"))
-    }
-
-    suspend fun removeFriend(
-        friendId: String
-    ): RealtimeDatabaseResult {
-        Firebase.auth.currentUser?.uid?.let {
-            return try {
-                val ref = db.getReference(REF_FRIEND).child(it).child(friendId)
-
-                ref.removeValue().await()
-                RealtimeDatabaseResult.Success
-            } catch (e: Exception) {
-                Log.e("sendFriendRequest", e.toString())
-                RealtimeDatabaseResult.Error(e)
-            }
-        } ?: return RealtimeDatabaseResult.Error(Exception("Current user is null"))
-    }
-
-    suspend fun getFriendRequests(userId: String): List<FriendData> {
-        val ref = db
-            .getReference(REF_FRIEND)
-            .child(userId)
-
-        val snapshot = ref.get().await()
-        val result = mutableListOf<FriendData>()
-
-        for (child in snapshot.children) {
-            val request = child.getValue(FriendData::class.java)
-            request?.let { result.add(it) }
+            // Выполняем множественное обновление как одну транзакцию
+            db.reference.updateChildren(updates).await()
+            RealtimeDatabaseResult.Success
+        } catch (e: Exception) {
+            Log.e("addFriend", "Error adding friend: ${e.message}", e)
+            RealtimeDatabaseResult.Error(e)
         }
-
-        return result
     }
 
-    fun getFriends(): Flow<RealtimeDatabaseValueResult<List<FriendData>>> = callbackFlow {
+    suspend fun removeFriend(friend: UserData): RealtimeDatabaseResult {
+        val currentUserId = Firebase.auth.currentUser?.uid
+            ?: return RealtimeDatabaseResult.Error(Exception("Current user is null"))
+
+        return try {
+            // Создаем Map для удаления связей с обеих сторон одновременно
+            val updates = hashMapOf<String, Any?>(
+                "${DBRef.FRIEND}/$currentUserId/${friend.userId}" to null,
+                "${DBRef.FRIEND}/${friend.userId}/$currentUserId" to null
+            )
+
+            // Выполняем множественное обновление как одну транзакцию
+            db.reference.updateChildren(updates).await()
+            RealtimeDatabaseResult.Success
+        } catch (e: Exception) {
+            Log.e("removeFriend", "Error removing friend: ${e.message}", e)
+            RealtimeDatabaseResult.Error(e)
+        }
+    }
+
+
+    fun getFriends(): Flow<RealtimeDatabaseValueResult<List<UserData>>> = callbackFlow {
         val userId = Firebase.auth.currentUser?.uid
 
         if (userId == null) {
@@ -78,19 +72,46 @@ class FirebaseFriendRepository : FirebaseDataRepository() {
         }
 
         val ref = db
-            .getReference(REF_FRIEND)
+            .getReference(DBRef.FRIEND)
             .child(userId)
 
         trySend(RealtimeDatabaseValueResult.Loading())
 
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val result = mutableListOf<FriendData>()
-                for (child in snapshot.children) {
-                    val request = child.getValue(FriendData::class.java)
-                    request?.let { result.add(it) }
+                try {
+                    val pendingTasks = mutableListOf<Task<DataSnapshot>>()
+                    val result = mutableListOf<UserData>()
+
+                    // Если друзей нет, сразу возвращаем пустой список
+                    if (!snapshot.exists() || snapshot.childrenCount == 0L) {
+                        trySend(RealtimeDatabaseValueResult.Success(emptyList()))
+                        return
+                    }
+
+                    // Создаем список задач для получения данных каждого друга
+                    for (child in snapshot.children) {
+                        val friendUserId = child.key ?: continue
+                        val userTask = db.getReference(DBRef.USERS).child(friendUserId).get()
+                        pendingTasks.add(userTask)
+
+                        userTask.addOnSuccessListener { userSnapshot ->
+                            val userData = userSnapshot.getValue<UserData>()
+                            if (userData != null) {
+                                result.add(userData)
+                            }
+                        }
+                    }
+
+                    // Ждем выполнения всех задач и отправляем результат
+                    Tasks.whenAllComplete(pendingTasks).addOnCompleteListener {
+                        trySend(RealtimeDatabaseValueResult.Success(result))
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("getFriends", e.toString())
+                    trySend(RealtimeDatabaseValueResult.Error(e))
                 }
-                trySend(RealtimeDatabaseValueResult.Success(result))
             }
 
             override fun onCancelled(error: DatabaseError) {

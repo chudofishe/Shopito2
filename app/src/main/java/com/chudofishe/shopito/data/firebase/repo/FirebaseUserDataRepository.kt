@@ -1,5 +1,6 @@
 package com.chudofishe.shopito.data.firebase.repo
 
+import com.chudofishe.shopito.data.firebase.DBRef
 import com.chudofishe.shopito.data.firebase.RealtimeDatabaseResult
 import com.chudofishe.shopito.data.firebase.RealtimeDatabaseValueResult
 import com.chudofishe.shopito.model.UserData
@@ -14,10 +15,8 @@ class FirebaseUserDataRepository(
     private val firebaseEmailToUIdRepository: FirebaseEmailToUIdRepository
 ) : FirebaseDataRepository() {
 
-    private val REF_USERS = "users"
-
     fun setUserData(userData: UserData) = callbackFlow<RealtimeDatabaseResult> {
-        db.getReference(REF_USERS).child(userData.userId).setValue(userData).addOnCompleteListener {
+        db.getReference(DBRef.USERS).child(userData.userId).setValue(userData).addOnCompleteListener {
             if (it.isSuccessful) {
                 trySend(RealtimeDatabaseResult.Success)
             } else {
@@ -35,9 +34,9 @@ class FirebaseUserDataRepository(
             if (getUserData(fbUser.uid) == null) {
                 setUserData(UserData(
                     userId = fbUser.uid,
-                    username = fbUser.displayName,
+                    name = fbUser.displayName,
                     email = fbUser.email,
-                    profilePictureUrl = fbUser.photoUrl.toString()
+                    photoUrl = fbUser.photoUrl.toString()
                 )).collect {
                     if (it is RealtimeDatabaseResult.Success) {
                         fbUser.email?.let {
@@ -49,23 +48,10 @@ class FirebaseUserDataRepository(
         }
     }
 
-    fun getUserDataFlow(userId: String) = callbackFlow<RealtimeDatabaseValueResult<UserData>> {
-        db.getReference(REF_USERS).child(userId).get().addOnSuccessListener {
-            it.getValue<UserData>()?.let {
-                trySend(RealtimeDatabaseValueResult.Success<UserData>(it))
-            }
-            close()
-        }.addOnFailureListener {
-            trySend(RealtimeDatabaseValueResult.Error<UserData>(it))
-            close()
-        }
-
-        awaitClose()
-    }
 
     suspend fun getUserData(userId: String?): UserData? {
         return userId?.let {
-            db.getReference(REF_USERS).child(userId).get().await().getValue<UserData>()
+            db.getReference(DBRef.USERS).child(userId).get().await().getValue<UserData>()
         }
     }
 }
