@@ -1,8 +1,12 @@
 package com.chudofishe.shopito.util
 
 import android.content.Context
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalContext
 import androidx. lifecycle. compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -78,3 +82,24 @@ fun LinkedHashMap<Category, List<ShoppingListItem>>.getCompletedCategories(): Li
 }
 
 fun List<ShoppingListItem>.areAllItemsComplete() = this.all { it.isChecked } && this.isNotEmpty()
+fun String.isValidEmail(): Boolean {
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(this).matches()
+}
+
+@Composable
+fun LazyListState.isScrollingUp(): State<Boolean> {
+    return produceState(initialValue = true) {
+        var lastIndex = 0
+        var lastScroll = Int.MAX_VALUE
+        snapshotFlow {
+            firstVisibleItemIndex to firstVisibleItemScrollOffset
+        }.collect { (currentIndex, currentScroll) ->
+            if (currentIndex != lastIndex || currentScroll != lastScroll) {
+                value = currentIndex < lastIndex ||
+                        (currentIndex == lastIndex && currentScroll < lastScroll)
+                lastIndex = currentIndex
+                lastScroll = currentScroll
+            }
+        }
+    }
+}

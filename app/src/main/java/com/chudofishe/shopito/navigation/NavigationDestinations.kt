@@ -22,6 +22,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.ui.add_list_item.AddShoppingListItemScreen
+import com.chudofishe.shopito.ui.friend_requests.FriendRequestsScreen
+import com.chudofishe.shopito.ui.friends.FriendsScreen
 import com.chudofishe.shopito.ui.home.HomeScreen
 import com.chudofishe.shopito.ui.profile.ProfileScreen
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsScreen
@@ -127,12 +129,34 @@ fun NavGraphBuilder.viewShoppingListScreenDestination(
 
 fun NavGraphBuilder.profileScreenDestination(
     onNavigateUp: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onNavigateTo: (ProfileNavigationRoute) -> Unit
 ) {
     composable<TopLevelNavigationRoute.ProfileRoute> {
         ProfileScreen(
             onNavigateUp = onNavigateUp,
-            onSignOut = onSignOut
+            onSignOut = onSignOut,
+            onNavigateTo = onNavigateTo,
+        )
+    }
+}
+
+fun NavGraphBuilder.friendsScreenDestination(
+    onNavigateUp: () -> Unit
+) {
+    composable<ProfileNavigationRoute.FriendsRoute> {
+        FriendsScreen(
+            onNavigateUp = onNavigateUp
+        )
+    }
+}
+
+fun NavGraphBuilder.friendRequestsScreenDestination(
+    onNavigateUp: () -> Unit
+) {
+    composable<ProfileNavigationRoute.FriendRequestsRoute> {
+        FriendRequestsScreen(
+            onNavigateUp = onNavigateUp
         )
     }
 }

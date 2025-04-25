@@ -1,7 +1,9 @@
 package com.chudofishe.shopito.ui.profile
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,16 +12,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,17 +36,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.chudofishe.shopito.R
 import com.chudofishe.shopito.model.UserData
+import com.chudofishe.shopito.navigation.ProfileNavigationRoute
+import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
 import org.koin.androidx.compose.koinViewModel
+
+enum class ProfileItem(val iconsRes: Int, val text: String) {
+    FRIENDS(R.drawable.icons8_cola_100, "Friends"),
+    FRIEND_REQUESTS(R.drawable.icons8_bread_100, "Friend requests"),
+    SIGN_OUT(R.drawable.icons8_exterior_100, "Sign out"),
+    //
+    MESSAGES(R.drawable.icons8_cola_100, "Messages"),
+    NOTIFICATIONS(R.drawable.icons8_cola_100, "Notifications"),
+    SETTINGS(R.drawable.icons8_cola_100, "Settings"),
+    PROFILE(R.drawable.icons8_cola_100, "Profile"),
+    LOG_OUT(R.drawable.icons8_cola_100, "Log out"),
+    ABOUT(R.drawable.icons8_cola_100, "About"),
+    HELP(R.drawable.icons8_cola_100, "Help"),
+    PRIVACY(R.drawable.icons8_cola_100, "Privacy"),
+    TERMS(R.drawable.icons8_cola_100, "Terms and Conditions"),
+    ACCOUNT(R.drawable.icons8_cola_100, "Account"),
+    BLOCKED_USERS(R.drawable.icons8_cola_100, "Blocked users"),
+    LANGUAGE(R.drawable.icons8_cola_100, "Language"),
+    FEEDBACK(R.drawable.icons8_cola_100, "Feedback"),
+    APPEARANCE(R.drawable.icons8_cola_100, "Appearance"),
+    SECURITY(R.drawable.icons8_cola_100, "Security"),
+    ACTIVITY(R.drawable.icons8_cola_100, "Activity"),
+    SAVED(R.drawable.icons8_cola_100, "Saved"),
+    SUBSCRIPTIONS(R.drawable.icons8_cola_100, "Subscriptions"),
+    PREFERENCES(R.drawable.icons8_cola_100, "Preferences")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onNavigateUp: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onNavigateTo: (ProfileNavigationRoute) -> Unit
 ) {
 
     val profileViewModel: ProfileViewModel = koinViewModel()
@@ -66,7 +103,19 @@ fun ProfileScreen(
         ProfileScreenContent(
             modifier = Modifier.padding(padding),
             state = state.userData,
-            onSignOutClicked = onSignOut
+            onListItemsClicked = {
+                if (it == ProfileItem.SIGN_OUT) {
+                    onSignOut()
+                } else {
+                    onNavigateTo(when(it) {
+                        ProfileItem.FRIENDS -> ProfileNavigationRoute.FriendsRoute
+                        ProfileItem.FRIEND_REQUESTS -> ProfileNavigationRoute.FriendRequestsRoute
+                        else -> {
+                            ProfileNavigationRoute.FriendRequestsRoute
+                        }
+                    })
+                }
+            }
         )
     }
 }
@@ -75,20 +124,26 @@ fun ProfileScreen(
 fun ProfileScreenContent(
     modifier: Modifier = Modifier,
     state: UserData,
-    onSignOutClicked: () -> Unit = {}
+    onListItemsClicked: (ProfileItem) -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(12.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(12.dp)
     ) {
         ProfileCard(
             userData = state
         )
-        Spacer(modifier = Modifier.weight(1f))
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onSignOutClicked
+        Spacer(modifier = Modifier.padding(8.dp))
+        LazyColumn(
         ) {
-            Text(text = "Sign out")
+            items(ProfileItem.entries.toTypedArray()) {
+                ProfileListItem(
+                    modifier = Modifier.padding(12.dp),
+                    item = it,
+                    onClick = onListItemsClicked
+                )
+            }
         }
     }
 }
@@ -145,8 +200,46 @@ fun ProfileCard(
             )
         }
     }
+}
 
+@Composable
+private fun ProfileListItem(
+    modifier: Modifier = Modifier,
+    item: ProfileItem,
+    onClick: (ProfileItem) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(true) {
+                onClick(item)
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = Modifier.size(32.dp),
+            painter = painterResource(id = item.iconsRes),
+            contentDescription = "Category image"
+        )
+        Spacer(modifier = Modifier.size(12.dp))
+        Text(
+            modifier = Modifier.weight(1f),
+            text = item.text,
+            style = MaterialTheme.typography.headlineSmall
+        )
+    }
+}
 
+@Composable
+@Preview(showBackground = true)
+fun ProfileListItemPreview(
+
+) {
+    ProfileListItem(
+        modifier = Modifier.padding(12.dp),
+        item = ProfileItem.FRIENDS,
+        onClick = {}
+    )
 }
 
 @Composable
@@ -173,6 +266,10 @@ fun ProfileScreenPreview() {
             userId = "1234",
             username = "Vitalii Vinokurov",
             email = "myemael@mail.ru",
-            profilePictureUrl = null
-    ))
+            profilePictureUrl = null,
+        ),
+        onListItemsClicked = {
+
+        }
+    )
 }

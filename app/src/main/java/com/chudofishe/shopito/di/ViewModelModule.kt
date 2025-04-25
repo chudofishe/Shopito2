@@ -3,6 +3,8 @@ package com.chudofishe.shopito.di
 import com.chudofishe.shopito.ui.RootViewModel
 import com.chudofishe.shopito.ui.add_list_item.create_item.CreateItemScreenViewModel
 import com.chudofishe.shopito.ui.add_list_item.recent_Items.RecentItemScreenViewModel
+import com.chudofishe.shopito.ui.friend_requests.FriendRequestsViewModel
+import com.chudofishe.shopito.ui.friends.FriendsViewModel
 import com.chudofishe.shopito.ui.home.HomeViewModel
 import com.chudofishe.shopito.ui.profile.ProfileViewModel
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsViewmodel
@@ -20,4 +22,11 @@ val vmModule = module {
     viewModel { ShoppingListScreenViewViewModel(get(), get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { RootViewModel(get()) }
+    viewModel { FriendsViewModel(get(), get()) }
+    viewModel {
+        FriendRequestsViewModel(
+            firebaseFriendRequestRepository = get(),
+            firebaseFriendRepository = get()
+        )
+    }
 }

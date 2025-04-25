@@ -2,7 +2,7 @@ package com.chudofishe.shopito.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chudofishe.shopito.data.firebase.FirebaseUserDataRepository
+import com.chudofishe.shopito.data.firebase.repo.FirebaseUserDataRepository
 import com.chudofishe.shopito.model.UserData
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase

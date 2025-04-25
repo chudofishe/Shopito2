@@ -1,24 +1,20 @@
-package com.chudofishe.shopito.data.firebase
+package com.chudofishe.shopito.data.firebase.repo
 
+import com.chudofishe.shopito.data.firebase.RealtimeDatabaseResult
+import com.chudofishe.shopito.data.firebase.RealtimeDatabaseValueResult
 import com.chudofishe.shopito.model.UserData
-import com.chudofishe.shopito.util.RealtimeDatabaseResult
-import com.chudofishe.shopito.util.RealtimeDatabaseValueResult
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.getValue
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.tasks.await
 
-class FirebaseUserDataRepository {
+class FirebaseUserDataRepository(
+    private val firebaseEmailToUIdRepository: FirebaseEmailToUIdRepository
+) : FirebaseDataRepository() {
 
-    private val DB_URL = "https://shopito-d61cb-default-rtdb.europe-west1.firebasedatabase.app/"
     private val REF_USERS = "users"
-
-    private val db = Firebase.database(DB_URL)
 
     fun setUserData(userData: UserData) = callbackFlow<RealtimeDatabaseResult> {
         db.getReference(REF_USERS).child(userData.userId).setValue(userData).addOnCompleteListener {
@@ -33,15 +29,22 @@ class FirebaseUserDataRepository {
         awaitClose()
     }
 
+
     suspend fun createUserIfAbsent() {
-        Firebase.auth.currentUser?.let {
-            if (getUserData(it.uid) == null) {
+        Firebase.auth.currentUser?.let {fbUser ->
+            if (getUserData(fbUser.uid) == null) {
                 setUserData(UserData(
-                    userId = it.uid,
-                    username = it.displayName,
-                    email = it.email,
-                    profilePictureUrl = it.photoUrl.toString()
-                )).collect()
+                    userId = fbUser.uid,
+                    username = fbUser.displayName,
+                    email = fbUser.email,
+                    profilePictureUrl = fbUser.photoUrl.toString()
+                )).collect {
+                    if (it is RealtimeDatabaseResult.Success) {
+                        fbUser.email?.let {
+                            firebaseEmailToUIdRepository.setEmailToUid(fbUser.email!!, fbUser.uid)
+                        }
+                    }
+                }
             }
         }
     }
@@ -60,7 +63,9 @@ class FirebaseUserDataRepository {
         awaitClose()
     }
 
-    suspend fun getUserData(userId: String): UserData? {
-        return db.getReference(REF_USERS).child(userId).get().await().getValue<UserData>()
+    suspend fun getUserData(userId: String?): UserData? {
+        return userId?.let {
+            db.getReference(REF_USERS).child(userId).get().await().getValue<UserData>()
+        }
     }
 }

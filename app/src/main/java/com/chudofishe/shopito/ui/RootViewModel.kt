@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chudofishe.shopito.auth.FirebaseAuthHandler
-import com.chudofishe.shopito.data.firebase.FirebaseUserDataRepository
-import com.chudofishe.shopito.util.FirebaseAuthResult
+import com.chudofishe.shopito.data.firebase.repo.FirebaseUserDataRepository
+import com.chudofishe.shopito.data.firebase.FirebaseAuthResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch

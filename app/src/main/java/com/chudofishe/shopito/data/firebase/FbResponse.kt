@@ -1,4 +1,4 @@
-package com.chudofishe.shopito.util
+package com.chudofishe.shopito.data.firebase
 
 sealed class RealtimeDatabaseValueResult<T> {
     class Success<T> (val data: T): RealtimeDatabaseValueResult<T>()

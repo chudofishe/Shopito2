@@ -5,7 +5,4 @@ data class UserData(
     val username: String? = "",
     val email: String? = "",
     val profilePictureUrl: String? = "",
-
-    val friends: List<String> = emptyList(),
-    val friendRequests: List<String> = emptyList()
 )

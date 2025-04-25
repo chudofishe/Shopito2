@@ -39,7 +39,7 @@ import com.chudofishe.shopito.ui.add_list_item.create_item.CreateItemScreenState
 import com.chudofishe.shopito.ui.add_list_item.recent_Items.RecentItemsScreen
 import com.chudofishe.shopito.ui.theme.ShopitoTheme
 
-data class TabItem(
+private data class TabItem(
     val title: String,
     val unSelectedIcon: ImageVector,
     val selectedIcon: ImageVector

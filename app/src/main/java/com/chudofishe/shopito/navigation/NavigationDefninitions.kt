@@ -23,5 +23,13 @@ sealed class TopLevelNavigationRoute : NavigationRoute {
     data class ViewListRoute(val listId: Long) : TopLevelNavigationRoute()
     @Serializable
     data object ProfileRoute : TopLevelNavigationRoute()
+
+}
+
+sealed class ProfileNavigationRoute : TopLevelNavigationRoute() {
+    @Serializable
+    data object FriendsRoute: ProfileNavigationRoute()
+    @Serializable
+    data object FriendRequestsRoute : ProfileNavigationRoute()
 }
 

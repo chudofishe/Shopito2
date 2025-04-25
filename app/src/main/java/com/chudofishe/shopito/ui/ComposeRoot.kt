@@ -7,8 +7,11 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.chudofishe.shopito.navigation.ProfileNavigationRoute
 import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
 import com.chudofishe.shopito.navigation.addItemScreenDestination
+import com.chudofishe.shopito.navigation.friendRequestsScreenDestination
+import com.chudofishe.shopito.navigation.friendsScreenDestination
 import com.chudofishe.shopito.navigation.homeScreenDestination
 import com.chudofishe.shopito.navigation.profileScreenDestination
 import com.chudofishe.shopito.navigation.viewShoppingListScreenDestination
@@ -20,6 +23,9 @@ fun ComposeRoot() {
     val rootNavController = rememberNavController()
     val rootViewModel = koinViewModel<RootViewModel>()
     val activity = LocalActivity.current
+    val navigateUp: () -> Unit = {
+        rootNavController.navigateUp()
+    }
 
     ObserveAsEvents(rootViewModel.signInChannelFlow) {
         Toast.makeText(
@@ -68,24 +74,27 @@ fun ComposeRoot() {
             }
         )
         addItemScreenDestination(
-            onNavigateUp = {
-                rootNavController.navigateUp()
-            }
+            onNavigateUp = navigateUp
         )
         viewShoppingListScreenDestination(
-            onNavigateUp = {
-                rootNavController.navigateUp()
-            }
+            onNavigateUp = navigateUp
         )
         profileScreenDestination(
-            onNavigateUp = {
-                rootNavController.navigateUp()
-            },
+            onNavigateUp = navigateUp,
             onSignOut = {
                 activity?.let {
                     rootViewModel.signOut(it)
                 }
+            },
+            onNavigateTo = {
+                rootNavController.navigate(it)
             }
+        )
+        friendsScreenDestination(
+            onNavigateUp = navigateUp
+        )
+        friendRequestsScreenDestination(
+            onNavigateUp = navigateUp
         )
     }
 }
