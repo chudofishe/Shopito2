@@ -1,5 +1,7 @@
 package com.chudofishe.shopito.data.firebase
 
+import com.google.firebase.auth.FirebaseUser
+
 sealed class RealtimeDatabaseValueResult<T> {
     class Success<T> (val data: T): RealtimeDatabaseValueResult<T>()
     class Error<T> (val error: Exception): RealtimeDatabaseValueResult<T>()
@@ -13,7 +15,7 @@ sealed class RealtimeDatabaseResult {
 }
 
 sealed class FirebaseAuthResult {
-    object Success : FirebaseAuthResult()
+    class Success(val user: FirebaseUser) : FirebaseAuthResult()
     object Loading : FirebaseAuthResult()
     class Error(val error: Exception) : FirebaseAuthResult()
 }

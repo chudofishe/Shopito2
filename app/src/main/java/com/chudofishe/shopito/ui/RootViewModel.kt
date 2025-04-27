@@ -4,13 +4,17 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chudofishe.shopito.auth.FirebaseAuthHandler
-import com.chudofishe.shopito.data.firebase.repo.FirebaseUserDataRepository
+import com.chudofishe.shopito.data.db.repository.AuthRepository
 import com.chudofishe.shopito.data.firebase.FirebaseAuthResult
+import com.chudofishe.shopito.data.firebase.repo.FirebaseUserDataRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class RootViewModel(private val firebaseUserDataRepository: FirebaseUserDataRepository) : ViewModel() {
+class RootViewModel(
+    private val firebaseUserDataRepository: FirebaseUserDataRepository,
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val signInChannel = Channel<Unit>()
     val signInChannelFlow = signInChannel.receiveAsFlow()
@@ -24,9 +28,10 @@ class RootViewModel(private val firebaseUserDataRepository: FirebaseUserDataRepo
                 when(it) {
                     is FirebaseAuthResult.Error -> TODO()
                     FirebaseAuthResult.Loading -> TODO()
-                    FirebaseAuthResult.Success -> {
+                    is FirebaseAuthResult.Success -> {
                         firebaseUserDataRepository.createUserIfAbsent()
                         signInChannel.send(Unit)
+                        authRepository.saveUserAuthData(it.user)
                     }
                 }
             }
@@ -37,6 +42,7 @@ class RootViewModel(private val firebaseUserDataRepository: FirebaseUserDataRepo
         viewModelScope.launch {
             FirebaseAuthHandler.handleSignOut(context)
             signOutChannel.trySend(Unit)
+            authRepository.clearAuthData()
         }
     }
 }

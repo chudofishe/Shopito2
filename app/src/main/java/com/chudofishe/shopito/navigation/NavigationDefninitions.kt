@@ -21,9 +21,6 @@ sealed class TopLevelNavigationRoute : NavigationRoute {
     data class AddItemRoute(val categoryToSelect: Category = Category.OTHER): TopLevelNavigationRoute()
     @Serializable
     data class ViewListRoute(val listId: Long) : TopLevelNavigationRoute()
-    @Serializable
-    data object ProfileRoute : TopLevelNavigationRoute()
-
 }
 
 sealed class ProfileNavigationRoute : TopLevelNavigationRoute() {

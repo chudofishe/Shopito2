@@ -1,7 +1,7 @@
 package com.chudofishe.shopito.data.db.repository
 
 import com.chudofishe.shopito.util.areAllItemsComplete
-import com.chudofishe.shopito.data.db.CurrentListDatastore
+import com.chudofishe.shopito.data.db.datastore.CurrentListDatastore
 import com.chudofishe.shopito.data.db.dao.ShoppingListDao
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList

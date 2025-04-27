@@ -1,19 +1,14 @@
 package com.chudofishe.shopito.navigation
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -25,7 +20,6 @@ import com.chudofishe.shopito.ui.add_list_item.AddShoppingListItemScreen
 import com.chudofishe.shopito.ui.friend_requests.FriendRequestsScreen
 import com.chudofishe.shopito.ui.friends.FriendsScreen
 import com.chudofishe.shopito.ui.home.HomeScreen
-import com.chudofishe.shopito.ui.profile.ProfileScreen
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsScreen
 import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreen
 import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListViewScreen
@@ -34,8 +28,9 @@ import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListViewScreen
 fun NavGraphBuilder.homeScreenDestination(
     onNavigateToAddItemScreen: (Category) -> Unit,
     onNavigateToViewListScreen: (Long) -> Unit,
-    onNavigateToProfileScreen: () -> Unit,
     onSignInRequest: () -> Unit,
+    onSignOutRequest: () -> Unit,
+    onNavigateFromDrawer: (ProfileNavigationRoute) -> Unit,
     onExitApp: () -> Unit
 ) {
     composable<TopLevelNavigationRoute.HomeRoute> {
@@ -73,7 +68,6 @@ fun NavGraphBuilder.homeScreenDestination(
                 }
             },
             onSignInRequest = onSignInRequest,
-            onNavigateToProFile = onNavigateToProfileScreen,
             onNavItemSelected = {
                 homeNavController.navigate(it) {
                     popUpTo(homeNavController.graph.findStartDestination().id) {
@@ -82,7 +76,9 @@ fun NavGraphBuilder.homeScreenDestination(
                     launchSingleTop = true
                     restoreState = true
                 }
-            }
+            },
+            onSignOutRequest = onSignOutRequest,
+            onDrawerItemSelected = onNavigateFromDrawer,
         ) { paddingValues ->
             NavHost(
                 navController = homeNavController,
@@ -127,19 +123,6 @@ fun NavGraphBuilder.viewShoppingListScreenDestination(
     }
 }
 
-fun NavGraphBuilder.profileScreenDestination(
-    onNavigateUp: () -> Unit,
-    onSignOut: () -> Unit,
-    onNavigateTo: (ProfileNavigationRoute) -> Unit
-) {
-    composable<TopLevelNavigationRoute.ProfileRoute> {
-        ProfileScreen(
-            onNavigateUp = onNavigateUp,
-            onSignOut = onSignOut,
-            onNavigateTo = onNavigateTo,
-        )
-    }
-}
 
 fun NavGraphBuilder.friendsScreenDestination(
     onNavigateUp: () -> Unit

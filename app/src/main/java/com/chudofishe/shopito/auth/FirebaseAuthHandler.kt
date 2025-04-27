@@ -12,6 +12,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import com.google.firebase.auth.ktx.auth
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 
@@ -52,7 +53,7 @@ object FirebaseAuthHandler {
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success")
-                            trySend(FirebaseAuthResult.Success)
+                            trySend(FirebaseAuthResult.Success(com.google.firebase.ktx.Firebase.auth.currentUser!!))
                         } else {
                             // If sign in fails, display a message to the user
                             Log.w(TAG, "signInWithCredential:failure", task.exception)

@@ -5,6 +5,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.chudofishe.shopito.navigation.ProfileNavigationRoute
@@ -13,7 +14,6 @@ import com.chudofishe.shopito.navigation.addItemScreenDestination
 import com.chudofishe.shopito.navigation.friendRequestsScreenDestination
 import com.chudofishe.shopito.navigation.friendsScreenDestination
 import com.chudofishe.shopito.navigation.homeScreenDestination
-import com.chudofishe.shopito.navigation.profileScreenDestination
 import com.chudofishe.shopito.navigation.viewShoppingListScreenDestination
 import com.chudofishe.shopito.util.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
@@ -61,9 +61,6 @@ fun ComposeRoot() {
             onNavigateToViewListScreen = {
                 rootNavController.navigate(TopLevelNavigationRoute.ViewListRoute(it))
             },
-            onNavigateToProfileScreen = {
-                rootNavController.navigate(TopLevelNavigationRoute.ProfileRoute)
-            },
             onSignInRequest = {
                 activity?.let {
                     rootViewModel.signIn(it)
@@ -71,6 +68,14 @@ fun ComposeRoot() {
             },
             onExitApp = {
                 activity?.finish()
+            },
+            onSignOutRequest = {
+                activity?.let {
+                    rootViewModel.signOut(it)
+                }
+            },
+            onNavigateFromDrawer = {
+                rootNavController.navigate(it)
             }
         )
         addItemScreenDestination(
@@ -78,17 +83,6 @@ fun ComposeRoot() {
         )
         viewShoppingListScreenDestination(
             onNavigateUp = navigateUp
-        )
-        profileScreenDestination(
-            onNavigateUp = navigateUp,
-            onSignOut = {
-                activity?.let {
-                    rootViewModel.signOut(it)
-                }
-            },
-            onNavigateTo = {
-                rootNavController.navigate(it)
-            }
         )
         friendsScreenDestination(
             onNavigateUp = navigateUp

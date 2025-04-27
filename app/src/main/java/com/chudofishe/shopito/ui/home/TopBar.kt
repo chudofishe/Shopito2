@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -28,8 +29,7 @@ fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onDeleteList: () -> Unit,
     onCompleteList: () -> Unit,
-    onSignIn: () -> Unit,
-    onProfileClicked: () -> Unit,
+    onMenuClicked: () -> Unit,
     title: String,
 ) {
     var isDropDownExpanded by remember {
@@ -48,6 +48,14 @@ fun TopBar(
         title = {
             Text(text = title)
         },
+        navigationIcon = { // Добавляем значок меню для открытия шторки
+            IconButton(onClick = onMenuClicked) {
+                Icon(
+                    imageVector = Icons.Default.Menu, // Используйте подходящую иконку меню
+                    contentDescription = "Open drawer"
+                )
+            }
+        },
         actions = {
             IconButton(onClick = {
                 isDropDownExpanded = true
@@ -59,19 +67,6 @@ fun TopBar(
                         onDismissRequest = {
                             isDropDownExpanded = false
                         }) {
-                        if (Firebase.auth.currentUser == null) {
-                            DropdownMenuItem(
-                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Sign in") },
-                                text = { Text(text = "Sign in") },
-                                onClick = wrapWithMenuClose(onSignIn)
-                            )
-                        } else {
-                            DropdownMenuItem(
-                                leadingIcon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile") },
-                                text = { Text(text = "Profile") },
-                                onClick = wrapWithMenuClose(onProfileClicked)
-                            )
-                        }
                         DropdownMenuItem(
                             leadingIcon = { Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete list") },
                             text = { Text(text = "Delete list") },

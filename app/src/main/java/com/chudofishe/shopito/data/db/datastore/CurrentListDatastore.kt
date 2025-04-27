@@ -1,4 +1,4 @@
-package com.chudofishe.shopito.data.db
+package com.chudofishe.shopito.data.db.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
