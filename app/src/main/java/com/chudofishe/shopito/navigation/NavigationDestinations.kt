@@ -27,10 +27,9 @@ import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListViewScreen
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.homeScreenDestination(
     onNavigateToAddItemScreen: (Category) -> Unit,
-    onNavigateToViewListScreen: (Long) -> Unit,
     onSignInRequest: () -> Unit,
     onSignOutRequest: () -> Unit,
-    onNavigateFromDrawer: (ProfileNavigationRoute) -> Unit,
+    onNavigateFromDrawer: (ProfileNavigationRoute?) -> Unit,
     onExitApp: () -> Unit
 ) {
     composable<TopLevelNavigationRoute.HomeRoute> {
@@ -39,12 +38,10 @@ fun NavGraphBuilder.homeScreenDestination(
         val currentRoute = navBackStackEntry?.destination?.let {
             when (it.route) {
                 BottomNavigationRoute.CurrentListRoute::class.qualifiedName -> BottomNavigationRoute.CurrentListRoute
-                BottomNavigationRoute.RecentListsRoute::class.qualifiedName -> BottomNavigationRoute.RecentListsRoute
                 else -> null
             }
         } ?: BottomNavigationRoute.CurrentListRoute
 
-        val (recentListsFabOnClick, setRecentListsFabOnClick) = remember { mutableStateOf<(() -> Unit)?>(null) }
         val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
         BackHandler {
@@ -60,10 +57,6 @@ fun NavGraphBuilder.homeScreenDestination(
                 when (currentRoute) {
                     BottomNavigationRoute.CurrentListRoute -> {
                         onNavigateToAddItemScreen.invoke(Category.OTHER)
-                    }
-
-                    BottomNavigationRoute.RecentListsRoute -> {
-                        recentListsFabOnClick?.invoke()
                     }
                 }
             },
@@ -89,13 +82,6 @@ fun NavGraphBuilder.homeScreenDestination(
                     ShoppingListScreen(
                         modifier = Modifier.nestedScroll(topBarScrollBehavior.nestedScrollConnection),
                         onNavigateToAddItemScreenWithCategory = onNavigateToAddItemScreen
-                    )
-                }
-                composable<BottomNavigationRoute.RecentListsRoute> {
-                    RecentShoppingListsScreen(
-                        modifier = Modifier.nestedScroll(topBarScrollBehavior.nestedScrollConnection),
-                        setRecentListsFabOnClick = setRecentListsFabOnClick,
-                        onNavigateToViewList = onNavigateToViewListScreen
                     )
                 }
             }
@@ -130,6 +116,18 @@ fun NavGraphBuilder.friendsScreenDestination(
     composable<ProfileNavigationRoute.FriendsRoute> {
         FriendsScreen(
             onNavigateUp = onNavigateUp
+        )
+    }
+}
+
+fun NavGraphBuilder.recentListsDestination(
+    onNavigateUp: () -> Unit,
+    onNavigateToViewListScreen: (Long) -> Unit
+) {
+    composable<ProfileNavigationRoute.RecentListsRoute> {
+        RecentShoppingListsScreen(
+            onNavigateUp = onNavigateUp,
+            onNavigateToViewList = onNavigateToViewListScreen
         )
     }
 }

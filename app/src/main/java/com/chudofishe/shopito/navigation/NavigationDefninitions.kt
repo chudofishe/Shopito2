@@ -10,8 +10,6 @@ data object NavigateBack : NavigationRoute
 sealed class BottomNavigationRoute : NavigationRoute {
     @Serializable
     data object CurrentListRoute : BottomNavigationRoute()
-    @Serializable
-    data object RecentListsRoute: BottomNavigationRoute()
 }
 
 sealed class TopLevelNavigationRoute : NavigationRoute {
@@ -28,5 +26,7 @@ sealed class ProfileNavigationRoute : TopLevelNavigationRoute() {
     data object FriendsRoute: ProfileNavigationRoute()
     @Serializable
     data object FriendRequestsRoute : ProfileNavigationRoute()
+    @Serializable
+    data object RecentListsRoute : ProfileNavigationRoute()
 }
 

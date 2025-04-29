@@ -14,6 +14,7 @@ import com.chudofishe.shopito.navigation.addItemScreenDestination
 import com.chudofishe.shopito.navigation.friendRequestsScreenDestination
 import com.chudofishe.shopito.navigation.friendsScreenDestination
 import com.chudofishe.shopito.navigation.homeScreenDestination
+import com.chudofishe.shopito.navigation.recentListsDestination
 import com.chudofishe.shopito.navigation.viewShoppingListScreenDestination
 import com.chudofishe.shopito.util.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
@@ -58,9 +59,6 @@ fun ComposeRoot() {
             onNavigateToAddItemScreen = {
                 rootNavController.navigate(TopLevelNavigationRoute.AddItemRoute(categoryToSelect = it))
             },
-            onNavigateToViewListScreen = {
-                rootNavController.navigate(TopLevelNavigationRoute.ViewListRoute(it))
-            },
             onSignInRequest = {
                 activity?.let {
                     rootViewModel.signIn(it)
@@ -75,7 +73,9 @@ fun ComposeRoot() {
                 }
             },
             onNavigateFromDrawer = {
-                rootNavController.navigate(it)
+                it?.let {
+                    rootNavController.navigate(it)
+                }
             }
         )
         addItemScreenDestination(
@@ -89,6 +89,12 @@ fun ComposeRoot() {
         )
         friendRequestsScreenDestination(
             onNavigateUp = navigateUp
+        )
+        recentListsDestination(
+            onNavigateUp = navigateUp,
+            onNavigateToViewListScreen = {
+                rootNavController.navigate(TopLevelNavigationRoute.ViewListRoute(it))
+            }
         )
     }
 }

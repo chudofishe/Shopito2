@@ -43,7 +43,7 @@ fun HomeScreen(
     onFabClicked: () -> Unit,
     onSignInRequest: () -> Unit,
     onSignOutRequest: () -> Unit,
-    onDrawerItemSelected: (ProfileNavigationRoute) -> Unit,
+    onDrawerItemSelected: (ProfileNavigationRoute?) -> Unit,
     onNavItemSelected: (BottomNavigationRoute) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -92,7 +92,6 @@ fun HomeScreen(
                 TopBar(
                     title = when (currentRoute) {
                         BottomNavigationRoute.CurrentListRoute -> state.currentListTitle
-                        BottomNavigationRoute.RecentListsRoute -> "Recent"
                     },
                     scrollBehavior = topAppBarScrollBehavior,
                     onDeleteList = { showDeleteDialog = true },

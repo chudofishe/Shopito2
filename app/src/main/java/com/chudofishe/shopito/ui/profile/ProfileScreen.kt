@@ -55,6 +55,7 @@ enum class ProfileItem(val iconsRes: Int, val text: String) {
     FRIENDS(R.drawable.icons8_cola_100, "Friends"),
     FRIEND_REQUESTS(R.drawable.icons8_bread_100, "Friend requests"),
     SIGN_OUT(R.drawable.icons8_exterior_100, "Sign out"),
+    RECENT(R.drawable.icons8_task_96, "Recent lists")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +64,7 @@ fun ProfileScreen(
     onNavigateUp: () -> Unit,
     onSignOut: () -> Unit,
     onSignIn: () -> Unit,
-    onNavigateTo: (ProfileNavigationRoute) -> Unit
+    onNavigateTo: (ProfileNavigationRoute?) -> Unit
 ) {
 
     val profileViewModel: ProfileViewModel = koinViewModel()
@@ -97,9 +98,8 @@ fun ProfileScreen(
                     onNavigateTo(when(it) {
                         ProfileItem.FRIENDS -> ProfileNavigationRoute.FriendsRoute
                         ProfileItem.FRIEND_REQUESTS -> ProfileNavigationRoute.FriendRequestsRoute
-                        else -> {
-                            ProfileNavigationRoute.FriendRequestsRoute
-                        }
+                        ProfileItem.RECENT -> ProfileNavigationRoute.RecentListsRoute
+                        else -> null
                     })
                 }
             }
@@ -118,14 +118,17 @@ fun ProfileScreenContent(
         if (state.isAuthenticated) {
             ProfileItem.entries.toTypedArray()
         } else {
-            emptyArray()
+            arrayOf(
+                ProfileItem.RECENT
+            )
         }
     }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(12.dp)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (state.isAuthenticated) {
             ProfileCard(
@@ -136,16 +139,15 @@ fun ProfileScreenContent(
                 onSignInClick = onSignIn
             )
         }
-        Spacer(modifier = Modifier.padding(6.dp))
-        Card {
-            LazyColumn {
-                items(settingsItems) {
-                    ProfileListItem(
-                        modifier = Modifier.padding(12.dp),
-                        item = it,
-                        onClick = onListItemsClicked
-                    )
-                }
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(settingsItems) {
+                ProfileListItem(
+                    modifier = Modifier.padding(12.dp),
+                    item = it,
+                    onClick = onListItemsClicked
+                )
             }
         }
     }
@@ -282,25 +284,27 @@ private fun ProfileListItem(
     item: ProfileItem,
     onClick: (ProfileItem) -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(true) {
-                onClick(item)
-            },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            modifier = Modifier.size(32.dp),
-            painter = painterResource(id = item.iconsRes),
-            contentDescription = "Category image"
-        )
-        Spacer(modifier = Modifier.size(12.dp))
-        Text(
-            modifier = Modifier.weight(1f),
-            text = item.text,
-            style = MaterialTheme.typography.headlineSmall
-        )
+    Card {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable(true) {
+                    onClick(item)
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier.size(32.dp),
+                painter = painterResource(id = item.iconsRes),
+                contentDescription = "Category image"
+            )
+            Spacer(modifier = Modifier.size(12.dp))
+            Text(
+                modifier = Modifier.weight(1f),
+                text = item.text,
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
     }
 }
 
@@ -352,7 +356,9 @@ fun ProfileScreenPreview() {
             name = "Vitalii Vinokurov",
             email = "myemael@mail.ru",
             photoUrl = null,
-        )),
+                ),
+
+            isAuthenticated = true),
         onListItemsClicked = {
 
         }

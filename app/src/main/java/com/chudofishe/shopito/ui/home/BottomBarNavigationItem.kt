@@ -12,5 +12,4 @@ enum class BottomBarNavigationItem(
     val icon: ImageVector
 ) {
     CURRENT("Current", BottomNavigationRoute.CurrentListRoute, Icons.Default.Home),
-    RECENT("Recent", BottomNavigationRoute.RecentListsRoute, Icons.Default.Refresh);
 }
