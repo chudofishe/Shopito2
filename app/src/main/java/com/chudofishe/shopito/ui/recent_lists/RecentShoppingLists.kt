@@ -74,6 +74,10 @@ fun RecentShoppingListsScreen(
             is TopLevelNavigationRoute.ViewListRoute -> {
                 onNavigateToViewList(it.listId)
             }
+            is TopLevelNavigationRoute.HomeRoute -> {
+                onNavigateUp()
+            }
+            else -> { /* Игнорируем другие события */ }
         }
     }
 

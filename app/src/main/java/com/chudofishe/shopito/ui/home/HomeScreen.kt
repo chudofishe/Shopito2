@@ -3,6 +3,7 @@ package com.chudofishe.shopito.ui.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -17,6 +18,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -27,29 +29,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import com.chudofishe.shopito.R
-import com.chudofishe.shopito.navigation.BottomNavigationRoute
+import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.navigation.ProfileNavigationRoute
 import com.chudofishe.shopito.ui.profile.ProfileScreen
+import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreen
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    currentRoute: BottomNavigationRoute,
-    topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onFabClicked: () -> Unit,
     onSignInRequest: () -> Unit,
     onSignOutRequest: () -> Unit,
     onDrawerItemSelected: (ProfileNavigationRoute?) -> Unit,
-    onNavItemSelected: (BottomNavigationRoute) -> Unit,
-    content: @Composable (PaddingValues) -> Unit
+    onNavigateToAddItemScreen: (Category) -> Unit
 ) {
 
     val homeViewModel: HomeViewModel = koinViewModel()
     val state by homeViewModel.homeScreenState.collectAsState()
+    val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showDeleteDialog by remember {
         mutableStateOf(false)
@@ -82,18 +84,10 @@ fun HomeScreen(
         }
     ) {
         Scaffold(
-            bottomBar = {
-                BottomBar(
-                    currentRoute = currentRoute,
-                    onNavItemSelected = onNavItemSelected
-                )
-            },
             topBar = {
                 TopBar(
-                    title = when (currentRoute) {
-                        BottomNavigationRoute.CurrentListRoute -> state.currentListTitle
-                    },
-                    scrollBehavior = topAppBarScrollBehavior,
+                    title = state.currentListTitle,
+                    scrollBehavior = topBarScrollBehavior,
                     onDeleteList = { showDeleteDialog = true },
                     onCompleteList = {
 
@@ -134,7 +128,10 @@ fun HomeScreen(
                     )
                 }
             }
-            content(paddingValues)
+            ShoppingListScreen(
+                modifier = Modifier.padding(paddingValues).nestedScroll(topBarScrollBehavior.nestedScrollConnection),
+                onNavigateToAddItemScreenWithCategory = onNavigateToAddItemScreen
+            )
         }
     }
 }

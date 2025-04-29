@@ -7,11 +7,6 @@ interface NavigationRoute
 
 data object NavigateBack : NavigationRoute
 
-sealed class BottomNavigationRoute : NavigationRoute {
-    @Serializable
-    data object CurrentListRoute : BottomNavigationRoute()
-}
-
 sealed class TopLevelNavigationRoute : NavigationRoute {
     @Serializable
     data object HomeRoute : TopLevelNavigationRoute()
@@ -21,7 +16,7 @@ sealed class TopLevelNavigationRoute : NavigationRoute {
     data class ViewListRoute(val listId: Long) : TopLevelNavigationRoute()
 }
 
-sealed class ProfileNavigationRoute : TopLevelNavigationRoute() {
+sealed class ProfileNavigationRoute : NavigationRoute {
     @Serializable
     data object FriendsRoute: ProfileNavigationRoute()
     @Serializable
