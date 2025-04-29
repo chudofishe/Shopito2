@@ -5,10 +5,9 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.chudofishe.shopito.navigation.ProfileNavigationRoute
+import androidx.navigation.navOptions
 import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
 import com.chudofishe.shopito.navigation.addItemScreenDestination
 import com.chudofishe.shopito.navigation.friendRequestsScreenDestination
@@ -21,11 +20,11 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ComposeRoot() {
-    val rootNavController = rememberNavController()
+    val navController = rememberNavController()
     val rootViewModel = koinViewModel<RootViewModel>()
     val activity = LocalActivity.current
     val navigateUp: () -> Unit = {
-        rootNavController.navigateUp()
+        navController.navigateUp()
     }
 
     ObserveAsEvents(rootViewModel.signInChannelFlow) {
@@ -42,12 +41,12 @@ fun ComposeRoot() {
             "Sign out successful",
             Toast.LENGTH_LONG
         ).show()
-        rootNavController.navigate(TopLevelNavigationRoute.HomeRoute)
+        navController.navigate(TopLevelNavigationRoute.HomeRoute)
     }
 
     NavHost(
-        navController = rootNavController,
-        startDestination = TopLevelNavigationRoute.HomeRoute,
+        navController = navController,
+        startDestination = TopLevelNavigationRoute.HomeRoute(),
         enterTransition = {
             EnterTransition.None
         },
@@ -57,15 +56,12 @@ fun ComposeRoot() {
     ) {
         homeScreenDestination(
             onNavigateToAddItemScreen = {
-                rootNavController.navigate(TopLevelNavigationRoute.AddItemRoute(categoryToSelect = it))
+                navController.navigate(TopLevelNavigationRoute.AddItemRoute(categoryToSelect = it))
             },
             onSignInRequest = {
                 activity?.let {
                     rootViewModel.signIn(it)
                 }
-            },
-            onExitApp = {
-                activity?.finish()
             },
             onSignOutRequest = {
                 activity?.let {
@@ -74,7 +70,7 @@ fun ComposeRoot() {
             },
             onNavigateFromDrawer = {
                 it?.let {
-                    rootNavController.navigate(it)
+                    navController.navigate(it)
                 }
             }
         )
@@ -93,7 +89,17 @@ fun ComposeRoot() {
         recentListsDestination(
             onNavigateUp = navigateUp,
             onNavigateToViewListScreen = {
-                rootNavController.navigate(TopLevelNavigationRoute.ViewListRoute(it))
+                navController.navigate(TopLevelNavigationRoute.ViewListRoute(it))
+            },
+            onNavigateToHome = {
+                navController.navigate(
+                    TopLevelNavigationRoute.HomeRoute(it),
+                    navOptions {
+                        popUpTo(TopLevelNavigationRoute.HomeRoute()) {
+                            inclusive = true
+                        }
+                    }
+                )
             }
         )
     }

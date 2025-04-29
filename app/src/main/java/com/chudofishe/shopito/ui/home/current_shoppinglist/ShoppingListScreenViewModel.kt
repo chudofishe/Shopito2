@@ -1,4 +1,4 @@
-package com.chudofishe.shopito.ui.shoppinglist
+package com.chudofishe.shopito.ui.home.current_shoppinglist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

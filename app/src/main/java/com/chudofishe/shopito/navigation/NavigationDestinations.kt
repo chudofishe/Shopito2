@@ -16,7 +16,6 @@ fun NavGraphBuilder.homeScreenDestination(
     onSignInRequest: () -> Unit,
     onSignOutRequest: () -> Unit,
     onNavigateFromDrawer: (ProfileNavigationRoute?) -> Unit,
-    onExitApp: () -> Unit
 ) {
     composable<TopLevelNavigationRoute.HomeRoute> {
         HomeScreen(
@@ -64,12 +63,14 @@ fun NavGraphBuilder.friendsScreenDestination(
 
 fun NavGraphBuilder.recentListsDestination(
     onNavigateUp: () -> Unit,
-    onNavigateToViewListScreen: (Long) -> Unit
+    onNavigateToViewListScreen: (Long) -> Unit,
+    onNavigateToHome: (showDrawer: Boolean) -> Unit
 ) {
     composable<ProfileNavigationRoute.RecentListsRoute> {
         RecentShoppingListsScreen(
             onNavigateUp = onNavigateUp,
-            onNavigateToViewList = onNavigateToViewListScreen
+            onNavigateToViewList = onNavigateToViewListScreen,
+            onNavigateToHome = onNavigateToHome
         )
     }
 }

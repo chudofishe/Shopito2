@@ -1,4 +1,4 @@
-package com.chudofishe.shopito.ui.shoppinglist
+package com.chudofishe.shopito.ui.home.current_shoppinglist
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

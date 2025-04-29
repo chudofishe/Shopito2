@@ -51,6 +51,8 @@ import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.model.ShoppingListItem
 import com.chudofishe.shopito.navigation.TopLevelNavigationRoute
+import com.chudofishe.shopito.navigation.TopLevelNavigationRoute.HomeRoute
+import com.chudofishe.shopito.navigation.TopLevelNavigationRoute.ViewListRoute
 import com.chudofishe.shopito.ui.friends.AddFriendDialog
 import com.chudofishe.shopito.ui.friends.FriendsScreenContent
 import com.chudofishe.shopito.util.toDayOfWeekDateTimeString
@@ -63,7 +65,8 @@ import java.time.LocalDateTime
 @Composable
 fun RecentShoppingListsScreen(
     onNavigateUp: () -> Unit,
-    onNavigateToViewList: (Long) -> Unit
+    onNavigateToViewList: (Long) -> Unit,
+    onNavigateToHome: (showDrawer: Boolean) -> Unit
 ) {
     val viewmodel: RecentShoppingListsViewmodel = koinViewModel()
     val state by viewmodel.state.collectAsState()
@@ -71,11 +74,11 @@ fun RecentShoppingListsScreen(
 
     ObserveAsEvents(viewmodel.navigationEventsChannelFlow) {
         when (it) {
-            is TopLevelNavigationRoute.ViewListRoute -> {
+            is ViewListRoute -> {
                 onNavigateToViewList(it.listId)
             }
-            is TopLevelNavigationRoute.HomeRoute -> {
-                onNavigateUp()
+            is HomeRoute -> {
+                onNavigateToHome(false)
             }
             else -> { /* Игнорируем другие события */ }
         }

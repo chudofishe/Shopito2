@@ -1,12 +1,9 @@
-package com.chudofishe.shopito.ui.profile
+package com.chudofishe.shopito.ui.home.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chudofishe.shopito.data.db.repository.AuthRepository
-import com.chudofishe.shopito.data.firebase.repo.FirebaseUserDataRepository
 import com.chudofishe.shopito.model.UserData
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect

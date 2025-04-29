@@ -6,9 +6,9 @@ import com.chudofishe.shopito.ui.add_list_item.recent_Items.RecentItemScreenView
 import com.chudofishe.shopito.ui.friend_requests.FriendRequestsViewModel
 import com.chudofishe.shopito.ui.friends.FriendsViewModel
 import com.chudofishe.shopito.ui.home.HomeViewModel
-import com.chudofishe.shopito.ui.profile.ProfileViewModel
+import com.chudofishe.shopito.ui.home.profile.ProfileViewModel
 import com.chudofishe.shopito.ui.recent_lists.RecentShoppingListsViewmodel
-import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreenViewModel
+import com.chudofishe.shopito.ui.home.current_shoppinglist.ShoppingListScreenViewModel
 import com.chudofishe.shopito.ui.shoppinglistview.ShoppingListScreenViewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -18,7 +18,7 @@ val vmModule = module {
     viewModel { RecentItemScreenViewModel(get(), get()) }
     viewModel { CreateItemScreenViewModel(get(), get(), get()) }
     viewModel { RecentShoppingListsViewmodel(get()) }
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
     viewModel { ShoppingListScreenViewViewModel(get(), get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { RootViewModel(get(), get()) }

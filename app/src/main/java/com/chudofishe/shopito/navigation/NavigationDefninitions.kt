@@ -9,7 +9,7 @@ data object NavigateBack : NavigationRoute
 
 sealed class TopLevelNavigationRoute : NavigationRoute {
     @Serializable
-    data object HomeRoute : TopLevelNavigationRoute()
+    data class HomeRoute(val showDrawer: Boolean = false) : TopLevelNavigationRoute()
     @Serializable
     data class AddItemRoute(val categoryToSelect: Category = Category.OTHER): TopLevelNavigationRoute()
     @Serializable

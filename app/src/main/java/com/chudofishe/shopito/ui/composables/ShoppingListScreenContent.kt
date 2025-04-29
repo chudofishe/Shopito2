@@ -16,9 +16,9 @@ import com.chudofishe.shopito.R
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.model.ShoppingListItem
-import com.chudofishe.shopito.ui.shoppinglist.CompleteAnimation
-import com.chudofishe.shopito.ui.shoppinglist.ShoppingListEntries
-import com.chudofishe.shopito.ui.shoppinglist.categorisedList
+import com.chudofishe.shopito.ui.home.current_shoppinglist.CompleteAnimation
+import com.chudofishe.shopito.ui.home.current_shoppinglist.ShoppingListEntries
+import com.chudofishe.shopito.ui.home.current_shoppinglist.categorisedList
 
 @Composable
 fun ShoppingListScreenContent(

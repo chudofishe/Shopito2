@@ -20,7 +20,7 @@ class RecentShoppingListsViewmodel(
     private val _lists = shoppingListRepository.getAll()
     private val _currentList = shoppingListRepository.observeCurrentList().asStateFlow(viewModelScope, null)
 
-    private val navigationChannel = Channel<NavigationRoute>()
+    private val navigationChannel = Channel<TopLevelNavigationRoute>()
     val navigationEventsChannelFlow = navigationChannel.receiveAsFlow()
 
     val state = combine(
@@ -40,7 +40,7 @@ class RecentShoppingListsViewmodel(
     fun setCurrentListId(id: Long) {
         viewModelScope.launch {
             shoppingListRepository.setCurrentListId(id)
-            navigationChannel.send(TopLevelNavigationRoute.HomeRoute)
+            navigationChannel.send(TopLevelNavigationRoute.HomeRoute())
         }
     }
 
@@ -53,7 +53,7 @@ class RecentShoppingListsViewmodel(
     fun addNewList() {
         viewModelScope.launch {
             shoppingListRepository.createListAndSetAsCurrent()
-            navigationChannel.send(TopLevelNavigationRoute.HomeRoute)
+            navigationChannel.send(TopLevelNavigationRoute.HomeRoute())
         }
     }
 }

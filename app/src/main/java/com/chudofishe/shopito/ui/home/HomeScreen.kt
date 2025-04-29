@@ -1,7 +1,6 @@
 package com.chudofishe.shopito.ui.home
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -19,9 +18,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,8 +33,8 @@ import androidx.compose.ui.res.stringResource
 import com.chudofishe.shopito.R
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.navigation.ProfileNavigationRoute
-import com.chudofishe.shopito.ui.profile.ProfileScreen
-import com.chudofishe.shopito.ui.shoppinglist.ShoppingListScreen
+import com.chudofishe.shopito.ui.home.profile.ProfileScreen
+import com.chudofishe.shopito.ui.home.current_shoppinglist.ShoppingListScreen
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -57,8 +56,18 @@ fun HomeScreen(
         mutableStateOf(false)
     }
 
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerState = rememberDrawerState(
+        initialValue = if (state.isDrawerExpanded) DrawerValue.Open else DrawerValue.Closed
+    )
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(state.isDrawerExpanded) {
+        if (state.isDrawerExpanded && drawerState.isClosed) {
+            drawerState.open()
+        } else if (!state.isDrawerExpanded && drawerState.isOpen) {
+            drawerState.close()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -71,10 +80,10 @@ fun HomeScreen(
             ) {
                 ProfileScreen(
                     onNavigateUp = {
-                        scope.launch { drawerState.close() }
+                        scope.launch { homeViewModel.closeDrawer() }
                     },
                     onSignOut = {
-                        scope.launch { drawerState.close() }
+                        scope.launch { homeViewModel.closeDrawer() }
                         onSignOutRequest()
                     },
                     onNavigateTo = onDrawerItemSelected,
@@ -95,9 +104,9 @@ fun HomeScreen(
                     onMenuClicked = {
                         scope.launch {
                             if (drawerState.isClosed) {
-                                drawerState.open()
+                                homeViewModel.openDrawer()
                             } else {
-                                drawerState.close()
+                                homeViewModel.closeDrawer()
                             }
                         }
                     }
