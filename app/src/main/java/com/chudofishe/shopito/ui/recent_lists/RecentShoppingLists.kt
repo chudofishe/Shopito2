@@ -24,14 +24,19 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,6 +47,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,9 +64,11 @@ import com.chudofishe.shopito.ui.friends.AddFriendDialog
 import com.chudofishe.shopito.ui.friends.FriendsScreenContent
 import com.chudofishe.shopito.util.toDayOfWeekDateTimeString
 import com.chudofishe.shopito.ui.theme.ShopitoTheme
+import com.chudofishe.shopito.util.createSampleShoppingList
 import com.chudofishe.shopito.util.isScrollingUp
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDateTime
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +80,7 @@ fun RecentShoppingListsScreen(
     val viewmodel: RecentShoppingListsViewmodel = koinViewModel()
     val state by viewmodel.state.collectAsState()
     val listState = rememberLazyListState()
+    val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     ObserveAsEvents(viewmodel.navigationEventsChannelFlow) {
         when (it) {
@@ -97,7 +107,8 @@ fun RecentShoppingListsScreen(
                             contentDescription = "back"
                         )
                     }
-                }
+                },
+                scrollBehavior = topBarScrollBehavior
             )
         },
         floatingActionButton = {
@@ -121,7 +132,9 @@ fun RecentShoppingListsScreen(
         }
     ) { padding ->
         RecentShoppingListsContent(
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .padding(padding)
+                .nestedScroll(topBarScrollBehavior.nestedScrollConnection),
             state = state,
             listState = listState,
             onItemClicked = {
@@ -135,67 +148,72 @@ fun RecentShoppingListsScreen(
 fun RecentShoppingListsContent(
     modifier: Modifier = Modifier,
     state: RecentShoppingListsScreenState,
-    listState: LazyListState,
-    onItemClicked: (ShoppingList) -> Unit
+    listState: LazyListState = rememberLazyListState(),
+    onItemClicked: (ShoppingList) -> Unit = {}
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        state = listState,
     ) {
-        LazyColumn(
-            state = listState,
-        ) {
-            state.currentList?.let {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            fontStyle = FontStyle.Italic,
-                            text = "Current"
-                        )
-                    }
-                    ShoppingListPreview(
-                        list = it,
-                        onClick = onItemClicked
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            fontStyle = FontStyle.Italic,
-                            text = "Recent"
-                        )
-                    }
-                }
-            }
-
-            items(state.items) {
+        state.currentList?.let {
+            item {
                 ShoppingListPreview(
+                    modifier = Modifier.padding(
+                        top = 12.dp,
+                        start = 12.dp,
+                        end = 12.dp
+                    ),
                     list = it,
                     onClick = onItemClicked
                 )
-                HorizontalDivider()
+                HorizontalDivider(
+                    modifier = Modifier.padding(
+                        top = 12.dp,
+                    )
+                )
             }
+        }
+        items(state.items.filter { it != state.currentList }) {
+            ShoppingListPreview(
+                modifier = Modifier.padding(
+                    start = 12.dp,
+                    end = 12.dp
+                ),
+                list = it,
+                onClick = onItemClicked
+            )
         }
     }
 }
 
 @Composable
+@Preview(showBackground = true)
+fun RecentShoppingListsContentPreview() {
+    ShopitoTheme {
+        RecentShoppingListsContent(
+            state = RecentShoppingListsScreenState(
+                items = List(5) { index -> createSampleShoppingList(index.toLong() + 2) },
+                currentList = createSampleShoppingList(1)
+            ),
+            listState = rememberLazyListState(),
+            onItemClicked = { }
+        )
+    }
+}
+
+@Composable
 fun ShoppingListPreview(
+    modifier: Modifier = Modifier,
     list: ShoppingList,
     onClick: (ShoppingList) -> Unit
 ) {
-    Row(
-        modifier = Modifier
+    val completedCount = list.items.count { it.isChecked }
+
+    Card(
+        modifier = modifier
             .clickable { onClick(list) }
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             modifier = Modifier
@@ -203,16 +221,6 @@ fun ShoppingListPreview(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row {
-                if (list.isCompleted) {
-                    Icon(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(32.dp),
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
                 Text(
                     modifier = Modifier.basicMarquee(),
                     maxLines = 1,
@@ -221,30 +229,39 @@ fun ShoppingListPreview(
                 )
             }
             Row(
-                modifier = Modifier
-                    .alpha(0.7f)
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "${list.items.size} items",
-                    style = MaterialTheme.typography.bodyLarge
+                LinearProgressIndicator(
+                    progress = {
+                        completedCount.toFloat() / list.items.size.toFloat()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 8.dp)
+                        .weight(1f),
+                    drawStopIndicator = {}
                 )
-                Spacer(modifier = Modifier.size(8.dp))
-                Text(
-                    text = "${list.items.count { it.isChecked }} checked",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                if (list.isCompleted) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "",
+                    )
+                } else {
+                    Text(
+                        text = "$completedCount/${list.items.size}"
+                    )
+                }
             }
             Row {
                 list.getCategories().forEach {
                     Image(
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(32.dp),
                         painter = painterResource(id = it.drawable),
                         contentDescription = it.name
                     )
                 }
             }
         }
-
     }
 }
 
@@ -255,6 +272,7 @@ fun ShoppingListPreviewPreview(
 ) {
     ShopitoTheme {
         ShoppingListPreview(
+            modifier = Modifier.padding(24.dp),
             list = createSampleShoppingList(),
             onClick = {
 
@@ -263,53 +281,5 @@ fun ShoppingListPreviewPreview(
     }
 }
 
-//@Composable
-//@Preview(showBackground = true)
-//fun RecentShoppingListsPreview(
-//
-//) {
-//    ShopitoTheme {
-//        RecentShoppingListsContent(
-//            state = RecentShoppingListsScreenState(
-//                items = listOf(createSampleShoppingList(), createSampleShoppingList(), createSampleShoppingList()),
-//                currentList = createSampleShoppingList()
-//            ),
-//             onItemClicked = {
-//
-//             }
-//        )
-//    }
-//}
-//
-private fun createSampleShoppingList(): ShoppingList {
-    val item1 = ShoppingListItem(
-        id = 0, // Auto-generated by the database, placeholder here
-        name = "Apples",
-        category = Category.FRUITS_AND_VEGETABLES, // Assuming Category is an enum or another class you have
-        timeStamp = LocalDateTime.now(),
-        isChecked = false
-    )
 
-    val item2 = ShoppingListItem(
-        id = 0, // Auto-generated by the database, placeholder here
-        name = "Shampoo",
-        category = Category.HYGIENE_AND_COSMETICS,
-        timeStamp = LocalDateTime.now(),
-        isChecked = true
-    )
 
-    val item3 = ShoppingListItem(
-        id = 0, // Auto-generated by the database, placeholder here
-        name = "Bread",
-        category = Category.BAKERY,
-        timeStamp = LocalDateTime.now(),
-        isChecked = false
-    )
-
-    return ShoppingList(
-        id = 1, // You can modify this as needed
-        items = listOf(item1, item2, item3),
-        timestamp = LocalDateTime.now(),
-        isCompleted = true
-    )
-}

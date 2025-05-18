@@ -36,6 +36,11 @@ class RecentShoppingListsViewmodel(
         RecentShoppingListsScreenState()
     )
 
+    fun clearListHistory() {
+        viewModelScope.launch {
+            shoppingListRepository.clearHistory()
+        }
+    }
 
     fun setCurrentListId(id: Long) {
         viewModelScope.launch {

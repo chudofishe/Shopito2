@@ -147,15 +147,4 @@ class ShoppingListRepository(
         dao.delete(getCurrentList())
         createListAndSetAsCurrent()
     }
-
-//    suspend fun completeCurrentList() {
-//        val list = getCurrentList()
-//        val categories = mutableSetOf<Category>()
-//        list.items.map {
-//            categories.add(it.category)
-//            it.isChecked = true
-//        }
-//        dao.update(getCurrentList().copy())
-//    }
-
 }
