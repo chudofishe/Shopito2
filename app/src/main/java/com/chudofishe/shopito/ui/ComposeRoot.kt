@@ -41,7 +41,6 @@ fun ComposeRoot() {
             "Sign out successful",
             Toast.LENGTH_LONG
         ).show()
-        navController.navigate(TopLevelNavigationRoute.HomeRoute)
     }
 
     NavHost(

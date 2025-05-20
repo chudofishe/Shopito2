@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -121,28 +123,33 @@ fun ProfileScreenContent(
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(12.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (state.isAuthenticated) {
             ProfileCard(
+                modifier = Modifier.fillMaxWidth().padding(12.dp),
                 userData = state.userData
             )
         } else {
             UnauthenticatedProfileCard(
+                modifier = Modifier.fillMaxWidth().padding(12.dp),
                 onSignInClick = onSignIn
             )
         }
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(settingsItems) {
+            itemsIndexed(settingsItems) { index, item ->
                 ProfileListItem(
                     modifier = Modifier.padding(12.dp),
-                    item = it,
+                    item = item,
                     onClick = onListItemsClicked
                 )
+                if (index < settingsItems.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 12.dp)
+                    )
+                }
             }
         }
     }
@@ -169,39 +176,35 @@ fun ProfileCard(
     }
     val borderWidth = 4.dp
 
-    Card(
-
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+        AsyncImage(
+            model = userData.photoUrl,
+            contentDescription = "Profile image",
+            modifier = Modifier
+                .size(86.dp)
+                .border(
+                    BorderStroke(borderWidth, rainbowColorsBrush),
+                    CircleShape
+                )
+                .padding(borderWidth)
+                .clip(CircleShape)
+        )
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            AsyncImage(
-                model = userData.photoUrl,
-                contentDescription = "Profile image",
-                modifier = Modifier
-                    .size(72.dp)
-                    .border(
-                        BorderStroke(borderWidth, rainbowColorsBrush),
-                        CircleShape
-                    )
-                    .padding(borderWidth)
-                    .clip(CircleShape)
+            Text(
+                text = userData.name.toString(),
+                modifier = Modifier.padding(start = 16.dp),
+                style = MaterialTheme.typography.titleLarge
             )
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = userData.name.toString(),
-                    modifier = Modifier.padding(start = 16.dp),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = userData.email.toString(),
-                    modifier = Modifier.padding(start = 16.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            Text(
+                text = userData.email.toString(),
+                modifier = Modifier.padding(start = 16.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
@@ -279,27 +282,25 @@ private fun ProfileListItem(
     item: ProfileItem,
     onClick: (ProfileItem) -> Unit
 ) {
-    Card {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .clickable(true) {
-                    onClick(item)
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = item.iconsRes),
-                contentDescription = "Category image"
-            )
-            Spacer(modifier = Modifier.size(12.dp))
-            Text(
-                modifier = Modifier.weight(1f),
-                text = item.text,
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(true) {
+                onClick(item)
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = Modifier.size(32.dp),
+            painter = painterResource(id = item.iconsRes),
+            contentDescription = "Category image"
+        )
+        Spacer(modifier = Modifier.size(12.dp))
+        Text(
+            modifier = Modifier.weight(1f),
+            text = item.text,
+            style = MaterialTheme.typography.headlineSmall
+        )
     }
 }
 
