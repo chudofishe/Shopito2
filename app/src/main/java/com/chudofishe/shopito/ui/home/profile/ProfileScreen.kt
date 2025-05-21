@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,6 +48,7 @@ import coil3.compose.AsyncImage
 import com.chudofishe.shopito.R
 import com.chudofishe.shopito.model.UserData
 import com.chudofishe.shopito.navigation.ProfileNavigationRoute
+import com.chudofishe.shopito.ui.theme.ShopitoTheme
 import org.koin.androidx.compose.koinViewModel
 
 enum class ProfileItem(val iconsRes: Int, val text: String) {
@@ -58,7 +61,6 @@ enum class ProfileItem(val iconsRes: Int, val text: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onNavigateUp: () -> Unit,
     onSignOut: () -> Unit,
     onSignIn: () -> Unit,
     onNavigateTo: (ProfileNavigationRoute?) -> Unit
@@ -67,41 +69,23 @@ fun ProfileScreen(
     val profileViewModel: ProfileViewModel = koinViewModel()
     val state by profileViewModel.state.collectAsState()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(text = "Profile")
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = "back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        ProfileScreenContent(
-            modifier = Modifier.padding(padding),
-            state = state,
-            onSignIn = onSignIn,
-            onListItemsClicked = {
-                if (it == ProfileItem.SIGN_OUT) {
-                    onSignOut()
-                } else {
-                    onNavigateTo(when(it) {
-                        ProfileItem.FRIENDS -> ProfileNavigationRoute.FriendsRoute
-                        ProfileItem.FRIEND_REQUESTS -> ProfileNavigationRoute.FriendRequestsRoute
-                        ProfileItem.RECENT -> ProfileNavigationRoute.RecentListsRoute
-                        else -> null
-                    })
-                }
+    ProfileScreenContent(
+        modifier = Modifier.fillMaxSize(),
+        state = state,
+        onSignIn = onSignIn,
+        onListItemsClicked = {
+            if (it == ProfileItem.SIGN_OUT) {
+                onSignOut()
+            } else {
+                onNavigateTo(when(it) {
+                    ProfileItem.FRIENDS -> ProfileNavigationRoute.FriendsRoute
+                    ProfileItem.FRIEND_REQUESTS -> ProfileNavigationRoute.FriendRequestsRoute
+                    ProfileItem.RECENT -> ProfileNavigationRoute.RecentListsRoute
+                    else -> null
+                })
             }
-        )
-    }
+        }
+    )
 }
 
 @Composable
@@ -128,15 +112,22 @@ fun ProfileScreenContent(
     ) {
         if (state.isAuthenticated) {
             ProfileCard(
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                modifier = Modifier.fillMaxWidth().padding(
+                    horizontal = 12.dp,
+                    vertical = 36.dp
+                ),
                 userData = state.userData
             )
         } else {
             UnauthenticatedProfileCard(
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                modifier = Modifier.fillMaxWidth().padding(
+                    horizontal = 12.dp,
+                    vertical = 36.dp
+                ),
                 onSignInClick = onSignIn
             )
         }
+        HorizontalDivider()
         LazyColumn(
         ) {
             itemsIndexed(settingsItems) { index, item ->
@@ -145,11 +136,9 @@ fun ProfileScreenContent(
                     item = item,
                     onClick = onListItemsClicked
                 )
-                if (index < settingsItems.lastIndex) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 12.dp)
-                    )
-                }
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
             }
         }
     }
@@ -176,35 +165,39 @@ fun ProfileCard(
     }
     val borderWidth = 4.dp
 
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        color = MaterialTheme.colorScheme.background,
     ) {
-        AsyncImage(
-            model = userData.photoUrl,
-            contentDescription = "Profile image",
-            modifier = Modifier
-                .size(86.dp)
-                .border(
-                    BorderStroke(borderWidth, rainbowColorsBrush),
-                    CircleShape
-                )
-                .padding(borderWidth)
-                .clip(CircleShape)
-        )
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = userData.name.toString(),
-                modifier = Modifier.padding(start = 16.dp),
-                style = MaterialTheme.typography.titleLarge
+            AsyncImage(
+                model = userData.photoUrl,
+                contentDescription = "Profile image",
+                modifier = Modifier
+                    .size(86.dp)
+                    .border(
+                        BorderStroke(borderWidth, rainbowColorsBrush),
+                        CircleShape
+                    )
+                    .padding(borderWidth)
+                    .clip(CircleShape)
             )
-            Text(
-                text = userData.email.toString(),
-                modifier = Modifier.padding(start = 16.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = userData.name.toString(),
+                    modifier = Modifier.padding(start = 16.dp),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = userData.email.toString(),
+                    modifier = Modifier.padding(start = 16.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
@@ -345,18 +338,20 @@ fun UnAuthCardPreview(
 @Composable
 @Preview(showBackground = true)
 fun ProfileScreenPreview() {
-    ProfileScreenContent(
-        state = ProfileScreenState(
-            UserData(
-            userId = "1234",
-            name = "Vitalii Vinokurov",
-            email = "myemael@mail.ru",
-            photoUrl = null,
+    ShopitoTheme {
+        ProfileScreenContent(
+            state = ProfileScreenState(
+                UserData(
+                    userId = "1234",
+                    name = "Vitalii Vinokurov",
+                    email = "myemael@mail.ru",
+                    photoUrl = null,
                 ),
 
-            isAuthenticated = true),
-        onListItemsClicked = {
+                isAuthenticated = true),
+            onListItemsClicked = {
 
-        }
-    )
+            }
+        )
+    }
 }

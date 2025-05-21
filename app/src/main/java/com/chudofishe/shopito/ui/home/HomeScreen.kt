@@ -107,9 +107,6 @@ fun HomeScreen(
                 drawerContentColor = MaterialTheme.colorScheme.onSurface
             ) {
                 ProfileScreen(
-                    onNavigateUp = {
-                        scope.launch { drawerState.close() }
-                    },
                     onSignOut = {
                         scope.launch { drawerState.close() }
                         onSignOutRequest()
