@@ -18,10 +18,4 @@ class ShoppingListScreenViewViewModel(
 
     val selectedList = shoppingListRepository.observeListById(savedStateHandle.toRoute<TopLevelNavigationRoute.ViewListRoute>().listId)
         .asStateFlow(viewModelScope, ShoppingList())
-
-    fun updateCollapsedCategory(category: Category) {
-        viewModelScope.launch {
-            shoppingListRepository.updateCollapsedCategory(selectedList.value, category)
-        }
-    }
 }

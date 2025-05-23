@@ -208,7 +208,7 @@ fun ShoppingListPreview(
     list: ShoppingList,
     onClick: (ShoppingList) -> Unit
 ) {
-    val completedCount = list.items.count { it.isChecked }
+    val completedCount = list.items.count { it.currentCategory == Category.COMPLETED }
 
     Card(
         modifier = modifier

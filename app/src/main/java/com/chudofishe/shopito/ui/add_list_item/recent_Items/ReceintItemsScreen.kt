@@ -44,23 +44,21 @@ fun RecentItemsScreenContent(
 
     onItemClicked: (ShoppingListItem) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        LazyColumn {
-            items(
-                items = items
-            ) { item ->
-                Box(
-                    modifier = Modifier.clickable { onItemClicked(item) }
-                ) {
-                    ShoppingListEntry(
-                        modifier = Modifier.padding(12.dp),
-                        shoppingListItem = item
-                    )
-                    HorizontalDivider()
-                }
+        items(
+            items = items
+        ) { item ->
+            Box(
+                modifier = Modifier.clickable { onItemClicked(item) }
+            ) {
+                ShoppingListEntry(
+                    modifier = Modifier.padding(12.dp),
+                    shoppingListItem = item
+                )
+                HorizontalDivider()
             }
         }
     }
@@ -90,7 +88,7 @@ private fun generateShoppingListItems(): List<ShoppingListItem> {
             name = "Item $index",
             category = categories[index % categories.size], // Cycle through the categories
             timeStamp = LocalDateTime.now(),
-            isChecked = false
+            currentCategory = categories[index % categories.size]
         )
     }
 }

@@ -8,7 +8,7 @@ import com.chudofishe.shopito.data.db.dao.ShoppingListItemDao
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.model.ShoppingListItem
 
-@Database(entities = [ShoppingListItem::class, ShoppingList::class], version = 6, exportSchema = false)
+@Database(entities = [ShoppingListItem::class, ShoppingList::class], version = 7, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class RoomDb : RoomDatabase() {
     abstract val shoppingListItemDao: ShoppingListItemDao

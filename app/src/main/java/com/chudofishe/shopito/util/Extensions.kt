@@ -57,31 +57,8 @@ fun <T> ObserveAsEventsWithContext(flow: Flow<T>, onEvent: (Context, T) -> Unit)
 
 fun LocalDateTime.toDayOfWeekDateTimeString(): String = this.format(DateTimeFormatter.ofPattern("EEEE, d MMMM, HH:mm"))
 
-fun List<ShoppingListItem>.getCompletedCategories(): List<Category> {
-    val resList = mutableListOf<Category>()
-    val categorised = this.groupBy { it.category }
 
-    categorised.keys.forEach {
-        if (categorised[it]!!.all { item -> item.isChecked }) {
-            resList.add(it)
-        }
-    }
-
-    return resList
-}
-
-fun LinkedHashMap<Category, List<ShoppingListItem>>.getCompletedCategories(): List<Category> {
-    val resList = mutableListOf<Category>()
-    this.keys.forEach {
-        if (this[it]!!.all { item -> item.isChecked }) {
-            resList.add(it)
-        }
-    }
-
-    return resList
-}
-
-fun List<ShoppingListItem>.areAllItemsComplete() = this.all { it.isChecked } && this.isNotEmpty()
+fun List<ShoppingListItem>.areAllItemsComplete() = this.all { it.currentCategory == Category.COMPLETED } && this.isNotEmpty()
 fun String.isValidEmail(): Boolean {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(this).matches()
 }

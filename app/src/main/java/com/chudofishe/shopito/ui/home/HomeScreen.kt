@@ -18,13 +18,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,7 +33,6 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,14 +43,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.chudofishe.shopito.R
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.navigation.ProfileNavigationRoute
-import com.chudofishe.shopito.navigation.TopLevelNavigationRoute.HomeRoute
-import com.chudofishe.shopito.navigation.TopLevelNavigationRoute.ViewListRoute
 import com.chudofishe.shopito.ui.composables.CategoryChip
+import com.chudofishe.shopito.ui.home.current_shoppinglist.EmptyListPreview
 import com.chudofishe.shopito.ui.home.profile.ProfileScreen
 import com.chudofishe.shopito.ui.home.current_shoppinglist.ShoppingListScreen
 import com.chudofishe.shopito.util.ObserveAsEvents
@@ -80,7 +75,6 @@ fun HomeScreen(
     }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
             initialValue = SheetValue.PartiallyExpanded,
@@ -256,10 +250,31 @@ fun HomeScreen(
                     )
                 }
             }
-            ShoppingListScreen(
-                modifier = Modifier.padding(paddingValues).nestedScroll(topBarScrollBehavior.nestedScrollConnection),
-                onNavigateToAddItemScreenWithCategory = onNavigateToAddItemScreen
-            )
+            state.shoppingList?.let {
+                ShoppingListScreen(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .nestedScroll(topBarScrollBehavior.nestedScrollConnection),
+                    onNavigateToAddItemScreenWithCategory = onNavigateToAddItemScreen,
+                    onItemRemoved = {
+                        homeViewModel.removeItem(it)
+                    },
+                    onItemClicked = {
+                        homeViewModel.updateItem(it, it.category == it.currentCategory)
+                    },
+                    onCategoryCollapseStateToggled = {
+                        homeViewModel.toggleCategoryCollapsedState(it)
+                    },
+                    onAnimationFinished = {
+                        homeViewModel.hideCompleteAnimation()
+                    },
+                    shoppingList = it,
+                    showCompleteAnimation = state.showCompleteAnimation,
+                    collapsedCategories = state.collapsedCategories
+                )
+            } ?: run {
+                EmptyListPreview()
+            }
         }
     }
 }

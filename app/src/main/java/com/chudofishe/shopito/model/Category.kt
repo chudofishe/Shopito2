@@ -17,4 +17,5 @@ enum class Category(val drawable: Int, val text: Int) {
     MEAT (R.drawable.icons8_steak_100, R.string.category_meat),
     SNACKS (R.drawable.icons8_sweets_100, R.string.category_snacks),
     OTHER (R.drawable.icons8_task_96, R.string.category_other),
+    COMPLETED (R.drawable.icons8_task_completed_96, R.string.category_done)
 }

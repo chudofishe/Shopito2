@@ -6,6 +6,8 @@ import com.chudofishe.shopito.model.ShoppingListItem
 import java.time.LocalDateTime
 import kotlin.random.Random
 
+typealias ShoppingListEntries = LinkedHashMap<Category, List<ShoppingListItem>>
+
 fun createSampleShoppingList(id: Long = 1): ShoppingList {
     // Создаем случайное количество элементов (от 1 до 5)
     val itemCount = (1..5).random()
@@ -32,7 +34,7 @@ fun createSampleShoppingList(id: Long = 1): ShoppingList {
             name = name,
             category = category,
             timeStamp = LocalDateTime.now().minusDays(random.nextLong(7)),
-            isChecked = isChecked,
+            currentCategory = if (isChecked) Category.COMPLETED else category,
             description = if (random.nextBoolean()) "Заметка для $name" else ""
         )
     }
@@ -45,8 +47,5 @@ fun createSampleShoppingList(id: Long = 1): ShoppingList {
         items = items,
         timestamp = LocalDateTime.now().minusDays(daysAgo.toLong()),
         isCompleted = random.nextInt(10) < 3, // 30% вероятность, что список завершен
-        collapsedCategories = if (random.nextBoolean()) {
-            categories.filter { random.nextBoolean() }.toSet()
-        } else emptySet()
     )
 }

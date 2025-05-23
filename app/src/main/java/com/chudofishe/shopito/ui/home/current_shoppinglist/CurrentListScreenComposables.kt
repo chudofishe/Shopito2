@@ -1,30 +1,33 @@
 package com.chudofishe.shopito.ui.home.current_shoppinglist
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,52 +50,6 @@ import com.chudofishe.shopito.ui.theme.ShopitoTheme
 import java.time.LocalDateTime
 
 
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-fun LazyListScope.categorisedList(
-    entries: ShoppingListEntries,
-    collapsedCategories: Set<Category>,
-    completedCategories: Set<Category>,
-    isReadOnly: Boolean = false,
-
-    onItemRemoveButtonClicked: (ShoppingListItem) -> Unit,
-    onItemChecked: (item: ShoppingListItem) -> Unit,
-    onCollapsedButtonClicked: (Category) -> Unit,
-    onAddButtonClicked: (Category) -> Unit
-) {
-    entries.keys.forEach { category ->
-        stickyHeader {
-            CategoryHeader(
-                category = category,
-                isReadOnly = isReadOnly,
-                onCollapsedButtonClicked = onCollapsedButtonClicked,
-                onAddButtonClicked = onAddButtonClicked,
-                isCategoryCompleted = category in completedCategories
-            )
-            HorizontalDivider(
-                thickness = 1.dp
-            )
-        }
-        if (!collapsedCategories.contains(category)) {
-            entries[category]?.let { items ->
-                items(items, key = { it.name + it.id }) {
-                    ShoppingItem(
-                        modifier = Modifier.animateItem(),
-                        item = it,
-                        isReadOnly = isReadOnly,
-                        onDeleteButtonClicked = {
-                            onItemRemoveButtonClicked(it)
-                        },
-                        onCheckedChanged = {
-                            onItemChecked(it)
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun CompleteAnimation(
     onAnimationFinished: () -> Unit
@@ -106,6 +62,25 @@ fun CompleteAnimation(
 
     LaunchedEffect(progress) {
         if (progress == 1f) onAnimationFinished()
+    }
+}
+
+@Composable
+fun EmptyListPreview(
+    showCompleteAnimation: Boolean = false,
+    onAnimationFinished: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (showCompleteAnimation) {
+            CompleteAnimation(
+                onAnimationFinished = onAnimationFinished
+            )
+        } else {
+            Text(text = stringResource(id = R.string.label_list_empty))
+        }
     }
 }
 
@@ -132,7 +107,6 @@ fun CategoryHeader(
             .clickable {
                 onCollapsedButtonClicked(category)
             }
-            .background(color = MaterialTheme.colorScheme.surface)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -174,65 +148,119 @@ fun ShoppingItem(
     modifier: Modifier = Modifier,
     item: ShoppingListItem,
     isReadOnly: Boolean = false,
-
-    onDeleteButtonClicked: () -> Unit = {},
-    onCheckedChanged: () -> Unit ={}
+    onItemClicked: (ShoppingListItem) -> Unit = {}
 ) {
-    val deleteButtonModifier = Modifier
-        .alpha(0.3f)
-        .clickable {
-            onDeleteButtonClicked.invoke()
-        }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface)
             .clickable {
-                onCheckedChanged()
+                onItemClicked(item)
             }
             .padding(
                 12.dp
             ),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            Checkbox(
-                checked = item.isChecked,
-                onCheckedChange = {
-                    onCheckedChanged()
-                }
-            )
-        }
         Column(
             modifier = Modifier
-                .alpha(
-                    if (item.isChecked) 0.3f else 1f
-                )
                 .padding(start = 12.dp, end = 12.dp)
-                .weight(1f)
+                .weight(1f),
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = item.name,
-                textDecoration = if (item.isChecked) TextDecoration.LineThrough else TextDecoration.None
-            )
-            if (item.description.isNotBlank()) {
-                Text(
-                    modifier = Modifier.alpha(0.5f),
-                    fontStyle = FontStyle.Italic,
-                    text = item.description
-                )
-            }
-        }
-        if (!isReadOnly) {
-            Icon(
-                modifier = deleteButtonModifier,
-                imageVector = Icons.Default.Close,
-                contentDescription = ""
             )
         }
     }
 }
 
+@Composable
+fun CategoryCard(
+    modifier: Modifier = Modifier,
+    category: Category,
+    items: List<ShoppingListItem>,
+    isReadOnly: Boolean = false,
+    isCollapsed: Boolean = false,
+    onCollapsedButtonClicked: (Category) -> Unit = {},
+    onAddButtonClicked: (Category) -> Unit = {},
+    onItemRemoved: (ShoppingListItem) -> Unit = {},
+    onItemClicked: (ShoppingListItem) -> Unit = {}
+) {
+    Card(
+        modifier = modifier
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ){
+            CategoryHeader(
+                category = category,
+                isReadOnly = isReadOnly,
+                onCollapsedButtonClicked = onCollapsedButtonClicked,
+                onAddButtonClicked = onAddButtonClicked
+            )
+            if (!isCollapsed) {
+                Column {
+                    items.forEach {item ->
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = {
+                                if (it == SwipeToDismissBoxValue.EndToStart) {
+                                    onItemRemoved(item)
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                        )
+
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            enableDismissFromStartToEnd = false,
+                            backgroundContent = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                        .padding(horizontal = 20. dp),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    Icon(Icons.Default.Close, "Remove")
+                                }
+                            }
+                        ) {
+                            ShoppingItem(
+                                item = item,
+                                isReadOnly = isReadOnly,
+                                onItemClicked = onItemClicked,
+                            )
+                        }
+                        HorizontalDivider()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true,
+    backgroundColor = 0xFF888888)
+fun CategoryCardPreview(
+
+) {
+    val items = generateShoppingListItems().toMutableList()
+
+    ShopitoTheme {
+        CategoryCard(
+            modifier = Modifier.padding(12.dp),
+            category = Category.MEAT,
+            items = items,
+            onItemRemoved = {
+                items.remove(it)
+            }
+        )
+    }
+}
 
 
 @Composable
@@ -245,7 +273,7 @@ fun ShoppingItemPreview(
             item = ShoppingListItem(
                 name = "Test",
                 category = Category.BAKERY,
-                isChecked = false,
+                currentCategory = Category.BAKERY,
                 timeStamp = LocalDateTime.now(),
                 description = "Description"
             )
@@ -263,15 +291,15 @@ fun CategoryHeaderPreview(
     }
 }
 
-private fun generateShoppingListItems(): List<ShoppingListItem> {
+private fun generateShoppingListItems(numItems: Int = 5): List<ShoppingListItem> {
     val categories = listOf(Category.MEAT, Category.DRINKS, Category.BAKERY) // Replace with your actual Category enum
-    return List(15) { index ->
+    return List(numItems) { index ->
         ShoppingListItem(
             id = index + 1,
             name = "Item $index",
             category = categories[index % categories.size], // Cycle through the categories
+            currentCategory = categories[index % categories.size],
             timeStamp = LocalDateTime.now(),
-            isChecked = false
         )
     }
 }

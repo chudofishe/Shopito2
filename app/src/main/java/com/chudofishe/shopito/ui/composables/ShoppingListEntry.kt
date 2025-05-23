@@ -58,7 +58,7 @@ fun ShoppingListEntryPreview(
                 name = "Steak",
                 category = Category.MEAT,
                 timeStamp = LocalDateTime.now(),
-                isChecked = false
+                currentCategory = Category.MEAT,
             )
         )
     }

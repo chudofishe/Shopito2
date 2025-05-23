@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 
 class ShoppingListRepository(
@@ -21,13 +22,10 @@ class ShoppingListRepository(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun observeCurrentList(): Flow<ShoppingList> =  currentListDatastore.getCurrentListId()
+    fun observeCurrentList(): Flow<ShoppingList?> = currentListDatastore.getCurrentListId()
         .flatMapLatest { currentListId ->
             if (currentListId == null) {
-                flow {
-                    val newCurrentListId = createListAndSetAsCurrent()
-                    emit(newCurrentListId)
-                }.flatMapLatest { dao.getFlowById(it) }
+                flowOf(null)
             } else {
                 dao.getFlowById(currentListId)
             }
@@ -38,13 +36,9 @@ class ShoppingListRepository(
     suspend fun addItemToList(list: ShoppingList, item: ShoppingListItem) = withContext(defaultDispatcher) {
         with (list) {
             val updatedItems = items.toMutableList().apply { add(item) }
-            val updatedCompletedCategories = completedCategories.toMutableSet().apply { remove(item.category) }
-            val updatedCollapsedCategories = collapsedCategories.toMutableSet().apply { remove(item.category) }
 
             val updatedList = copy(
                 items = updatedItems,
-                completedCategories = updatedCompletedCategories,
-                collapsedCategories = updatedCollapsedCategories,
                 isCompleted = false
             )
 
@@ -55,24 +49,17 @@ class ShoppingListRepository(
     suspend fun removeItemFromList(list: ShoppingList, item: ShoppingListItem) = withContext(defaultDispatcher) {
         with (list) {
             val updatedItems = items.toMutableList().apply { remove(item) }
-            val categoryItems = updatedItems.filter { it.category == item.category }
-
-            val updatedCompletedCategories = completedCategories.toMutableSet()
-            if (categoryItems.all { it.isChecked } && categoryItems.isNotEmpty()) {
-                updatedCompletedCategories.add(item.category)
-            }
 
             val isCompleted = updatedItems.areAllItemsComplete()
 
             dao.update(
                 copy(
                     items = updatedItems,
-                    completedCategories = updatedCompletedCategories,
                     isCompleted = isCompleted
                 )
             )
 
-            if (isCompleted) createListAndSetAsCurrent()
+            if (isCompleted) currentListDatastore.setCurrentListId(null)
 
             return@withContext isCompleted
         }
@@ -82,51 +69,33 @@ class ShoppingListRepository(
         val updatedItems = list.items.map {
             if (it.name == item.name && it.category == item.category && it.description == item.description) item else it
         }
-        val categoryItems = updatedItems.filter { it.category == item.category }
-
-        val updatedCompletedCategories = list.completedCategories.toMutableSet()
-        val updatedCollapsedCategories = list.collapsedCategories.toMutableSet()
-
-        if (categoryItems.all { it.isChecked } && categoryItems.isNotEmpty()) {
-            updatedCompletedCategories.add(item.category)
-            updatedCollapsedCategories.add(item.category)
-        } else {
-            updatedCompletedCategories.remove(item.category)
-            updatedCollapsedCategories.remove(item.category)
-        }
 
         val isCompleted = updatedItems.areAllItemsComplete()
 
         dao.update(
             list.copy(
                 items = updatedItems,
-                completedCategories = updatedCompletedCategories,
-                collapsedCategories = updatedCollapsedCategories,
                 isCompleted = isCompleted
             )
         )
 
-        if (isCompleted) createListAndSetAsCurrent()
+        if (isCompleted) currentListDatastore.setCurrentListId(null)
 
         isCompleted
     }
 
-    suspend fun updateCollapsedCategory(list: ShoppingList, category: Category) {
-        val updatedCollapsedCategories = list.collapsedCategories.toMutableSet().apply {
-            if (!this.remove(category)) this.add(category)
-        }
+//    suspend fun createListAndSetAsCurrent(): Long = withContext(Dispatchers.IO) {
+//        val newCurrentListId = dao.insert(ShoppingList())
+//        currentListDatastore.setCurrentListId(newCurrentListId)
+//        newCurrentListId
+//    }
 
-        dao.update(
-            list.copy(
-                collapsedCategories = updatedCollapsedCategories
-            )
-        )
-    }
-
-    suspend fun createListAndSetAsCurrent() = withContext(Dispatchers.IO) {
+    suspend fun createListAndSetAsCurrent(): ShoppingList = withContext(Dispatchers.IO) {
         val newCurrentListId = dao.insert(ShoppingList())
         currentListDatastore.setCurrentListId(newCurrentListId)
-        newCurrentListId
+        ShoppingList(
+            id = newCurrentListId,
+        )
     }
 
     suspend fun setCurrentListId(id: Long) {
@@ -141,10 +110,5 @@ class ShoppingListRepository(
 
     fun observeListById(id: Long): Flow<ShoppingList> {
         return dao.getFlowById(id)
-    }
-
-    suspend fun deleteCurrentList() {
-        dao.delete(getCurrentList())
-        createListAndSetAsCurrent()
     }
 }

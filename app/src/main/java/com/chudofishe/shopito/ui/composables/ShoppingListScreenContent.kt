@@ -1,40 +1,34 @@
 package com.chudofishe.shopito.ui.composables
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.chudofishe.shopito.R
 import com.chudofishe.shopito.model.Category
 import com.chudofishe.shopito.model.ShoppingList
 import com.chudofishe.shopito.model.ShoppingListItem
-import com.chudofishe.shopito.ui.home.current_shoppinglist.CompleteAnimation
-import com.chudofishe.shopito.ui.home.current_shoppinglist.ShoppingListEntries
-import com.chudofishe.shopito.ui.home.current_shoppinglist.categorisedList
+import com.chudofishe.shopito.model.getCategoryToItemsList
+import com.chudofishe.shopito.ui.home.current_shoppinglist.CategoryCard
+import com.chudofishe.shopito.ui.home.current_shoppinglist.EmptyListPreview
 
 @Composable
 fun ShoppingListScreenContent(
     modifier: Modifier = Modifier,
     list: ShoppingList,
+    collapsedCategories: Set<Category> = emptySet(),
     showCompleteAnimation: Boolean = false,
+    isReadOnly: Boolean = false,
 
     onItemRemoveButtonClicked: (ShoppingListItem) -> Unit = {},
-    onItemChecked: (ShoppingListItem) -> Unit = {},
+    onItemClicked: (ShoppingListItem) -> Unit = {},
     onCategoryAddButtonClicked: (Category) -> Unit = {},
     onCategoryCollapseStateToggled: (Category) -> Unit = {},
     onAnimationFinished: () -> Unit = {}
 ) {
-    val entries: ShoppingListEntries = remember(list.items) {
-        list.toCategorisedMap()
-    }
 
     Column(
         modifier = modifier
@@ -43,33 +37,25 @@ fun ShoppingListScreenContent(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            categorisedList(
-                entries = entries,
-                collapsedCategories = list.collapsedCategories,
-                completedCategories = list.completedCategories,
-                isReadOnly = true,
-                onItemChecked = { item ->
-                    onItemChecked(item)
-                },
-                onItemRemoveButtonClicked = onItemRemoveButtonClicked,
-                onCollapsedButtonClicked = onCategoryCollapseStateToggled,
-                onAddButtonClicked = onCategoryAddButtonClicked,
-            )
+            items(list.items.getCategoryToItemsList()) {
+                CategoryCard(
+                    category = it.first,
+                    items = it.second,
+                    isReadOnly = isReadOnly,
+                    isCollapsed = it.first in collapsedCategories,
+                    onItemRemoved = onItemRemoveButtonClicked,
+                    onItemClicked = onItemClicked,
+                    onCollapsedButtonClicked = onCategoryCollapseStateToggled,
+                    onAddButtonClicked = onCategoryAddButtonClicked
+                )
+            }
         }
     }
 
-    if (entries.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            if (showCompleteAnimation) {
-                CompleteAnimation(
-                    onAnimationFinished = onAnimationFinished
-                )
-            } else {
-                Text(text = stringResource(id = R.string.label_list_empty))
-            }
-        }
+    if (list.items.isEmpty()) {
+        EmptyListPreview(
+            showCompleteAnimation = showCompleteAnimation,
+            onAnimationFinished = onAnimationFinished
+        )
     }
 }

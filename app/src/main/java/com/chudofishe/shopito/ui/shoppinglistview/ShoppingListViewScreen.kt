@@ -59,9 +59,7 @@ fun ShoppingListViewScreen(
             modifier = Modifier.padding(padding),
             list = selectedList,
             showCompleteAnimation = false,
-            onCategoryCollapseStateToggled = {
-                viewmodel.updateCollapsedCategory(it)
-            },
+            collapsedCategories = setOfNotNull(),
         )
     }
 }

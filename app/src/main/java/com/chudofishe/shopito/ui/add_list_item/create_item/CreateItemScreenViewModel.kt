@@ -72,11 +72,12 @@ class CreateItemScreenViewModel(
                     name = _name.value,
                     category = _category.value,
                     description = _description.value,
-                    isChecked = false,
-                    timeStamp = LocalDateTime.now()
+                    timeStamp = LocalDateTime.now(),
+                    currentCategory = _category.value
                 )
                 shoppingListItemRepository.add(newItem)
-                shoppingListRepository.addItemToList(shoppingListRepository.getCurrentList(), newItem)
+                val currentList = shoppingListRepository.getCurrentList() ?: shoppingListRepository.createListAndSetAsCurrent()
+                shoppingListRepository.addItemToList(currentList, newItem)
                 navigationChannel.send(NavigateBack)
             }
         }

@@ -21,9 +21,9 @@ data class  ShoppingListItem(
     val name: String,
     val description: String = "",
     val category: Category,
+    val currentCategory: Category,
     @Serializable(with = LocalDateSerializer::class)
     val timeStamp: LocalDateTime,
-    val isChecked: Boolean
 )
 
 object LocalDateSerializer : KSerializer<LocalDateTime> {
