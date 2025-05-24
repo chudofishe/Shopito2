@@ -7,5 +7,7 @@ data class HomeScreenState(
     val currentListTitle: String = "",
     val shoppingList: ShoppingList? = null,
     val showCompleteAnimation: Boolean = false,
-    val collapsedCategories: Set<Category> = emptySet()
+    val collapsedCategories: Set<Category> = emptySet(),
+    val selectedCategory: Category = Category.OTHER,
+    val itemNameInput: String = ""
 )

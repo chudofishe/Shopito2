@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -26,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,10 +38,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -243,6 +248,69 @@ fun CategoryCard(
 }
 
 @Composable
+fun CategoryPickerDialog(
+    onDismissRequest: () -> Unit,
+    onCategorySelected: (Category) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                text = "Pick category",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(Category.entries.filterNot { it == Category.COMPLETED
+                }) { category ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .clickable {
+                                onCategorySelected(category)
+                            }
+                            .padding(4.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = category.drawable),
+                            contentDescription = stringResource(id = category.text),
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text(
+                            text = stringResource(id = category.text),
+                            style = MaterialTheme.typography.labelSmall, // Используем labelSmall вместо bodySmall
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(top = 6.dp)
+                                .fillMaxWidth(),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            lineHeight = 12.sp // Компактная высота строки
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest
+            ) {
+                Text("Close")
+            }
+        }
+    )
+}
+
+@Composable
 @Preview(showBackground = true,
     backgroundColor = 0xFF888888)
 fun CategoryCardPreview(
@@ -288,6 +356,17 @@ fun CategoryHeaderPreview(
 ) {
     ShopitoTheme {
         CategoryHeader(Category.MEAT) {}
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun CategoryPickerDialogPreview() {
+    ShopitoTheme {
+        CategoryPickerDialog(
+            onDismissRequest = {},
+            onCategorySelected = {}
+        )
     }
 }
 

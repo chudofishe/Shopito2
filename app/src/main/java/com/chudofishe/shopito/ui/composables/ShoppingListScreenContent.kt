@@ -20,14 +20,12 @@ fun ShoppingListScreenContent(
     modifier: Modifier = Modifier,
     list: ShoppingList,
     collapsedCategories: Set<Category> = emptySet(),
-    showCompleteAnimation: Boolean = false,
     isReadOnly: Boolean = false,
 
     onItemRemoveButtonClicked: (ShoppingListItem) -> Unit = {},
     onItemClicked: (ShoppingListItem) -> Unit = {},
     onCategoryAddButtonClicked: (Category) -> Unit = {},
-    onCategoryCollapseStateToggled: (Category) -> Unit = {},
-    onAnimationFinished: () -> Unit = {}
+    onCategoryCollapseStateToggled: (Category) -> Unit = {}
 ) {
 
     Column(
@@ -50,12 +48,5 @@ fun ShoppingListScreenContent(
                 )
             }
         }
-    }
-
-    if (list.items.isEmpty()) {
-        EmptyListPreview(
-            showCompleteAnimation = showCompleteAnimation,
-            onAnimationFinished = onAnimationFinished
-        )
     }
 }

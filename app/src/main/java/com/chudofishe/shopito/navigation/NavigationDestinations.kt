@@ -19,9 +19,6 @@ fun NavGraphBuilder.homeScreenDestination(
 ) {
     composable<TopLevelNavigationRoute.HomeRoute> {
         HomeScreen(
-            onFabClicked = {
-                onNavigateToAddItemScreen.invoke(Category.OTHER)
-            },
             onSignInRequest = onSignInRequest,
             onSignOutRequest = onSignOutRequest,
             onDrawerItemSelected = onNavigateFromDrawer,

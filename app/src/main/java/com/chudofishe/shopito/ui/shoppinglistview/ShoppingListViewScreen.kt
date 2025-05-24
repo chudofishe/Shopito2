@@ -58,7 +58,6 @@ fun ShoppingListViewScreen(
         ShoppingListScreenContent(
             modifier = Modifier.padding(padding),
             list = selectedList,
-            showCompleteAnimation = false,
             collapsedCategories = setOfNotNull(),
         )
     }

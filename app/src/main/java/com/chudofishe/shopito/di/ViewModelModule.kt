@@ -16,7 +16,7 @@ val vmModule = module {
     viewModel { RecentItemScreenViewModel(get(), get()) }
     viewModel { CreateItemScreenViewModel(get(), get(), get()) }
     viewModel { RecentShoppingListsViewmodel(get()) }
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ShoppingListScreenViewViewModel(get(), get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { RootViewModel(get(), get()) }

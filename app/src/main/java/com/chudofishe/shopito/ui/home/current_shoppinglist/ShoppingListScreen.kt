@@ -14,27 +14,25 @@ import com.chudofishe.shopito.ui.composables.ShoppingListScreenContent
 fun ShoppingListScreen(
     modifier: Modifier = Modifier,
     shoppingList: ShoppingList,
-    showCompleteAnimation: Boolean,
     collapsedCategories: Set<Category>,
 
     onNavigateToAddItemScreenWithCategory: (Category) -> Unit,
     onItemRemoved: (ShoppingListItem) -> Unit,
     onItemClicked: (ShoppingListItem) -> Unit,
-    onCategoryCollapseStateToggled: (Category) -> Unit,
-    onAnimationFinished: () -> Unit
+    onCategoryCollapseStateToggled: (Category) -> Unit
 ) {
 
     ShoppingListScreenContent(
-        modifier = modifier.padding(12.dp),
+        modifier = modifier.padding(
+            horizontal = 12.dp
+        ),
         list = shoppingList,
-        showCompleteAnimation = showCompleteAnimation,
         collapsedCategories = collapsedCategories,
 
         onItemRemoveButtonClicked = onItemRemoved,
         onItemClicked = onItemClicked,
         onCategoryAddButtonClicked = onNavigateToAddItemScreenWithCategory,
         onCategoryCollapseStateToggled = onCategoryCollapseStateToggled,
-        onAnimationFinished = onAnimationFinished
     )
 }
 
